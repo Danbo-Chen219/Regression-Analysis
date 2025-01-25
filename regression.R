@@ -5,3 +5,5 @@ rm(list=ls())
   lapply(want, function(i) require(i, character.only = TRUE))
   rm(need)
   }
+
+# Load data
