@@ -78,3 +78,7 @@ print(cbind(bhat, stdbhat, t, prob1, prob2))
 xydata <- data.frame(y, x)
 
 # export data
+write.csv(xydata, file = "xydata.csv")
+
+# import data
+xydata.csv <- read.csv(file = "xydata.csv")
