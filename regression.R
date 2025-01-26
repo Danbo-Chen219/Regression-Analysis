@@ -32,7 +32,7 @@ e <- rnorm(n = n, mean = 0, sd = 3)
 
 b <- c(bo, b1, b2)
 x <- cbind(x0, x1, x2)
-y <- X %*% b + e
+y <- x %*% b + e
 
 print(b)
 print(x)
@@ -43,7 +43,7 @@ print(y)
 
 bhat <- solve(t(x) %*% x) %*% t(x) %*% y
 
-yhat <- X %*% bhat
+yhat <- x %*% bhat
 ehat <- y - yhat
 
 print(b)
@@ -58,9 +58,9 @@ rsq <- ess / tss # R-squared
 sigma2 <- rss / dfe # residual variance
 
 # step 3: Hypothesis testing
-
+print(x)
 # t-test
-stdbhat <- diag(solve(t(x) %% x) * sigma2) # standard errors of bhat
+stdbhat <- diag(solve(t(x) %*% x) * sigma2) # standard errors of bhat
 
 # extracting the diagonal elements of the variance-covariance matrix (X'X)^-1
 t <- bhat / stdbhat # t-statistics
@@ -71,3 +71,10 @@ prob2 <- 1 - pf(t^2, 1, dfe) # p-values, using F distribution
 # print estimated coefficients, their standard errors, t-statistics, and p-values
 
 print(cbind(bhat, stdbhat, t, prob1, prob2))
+
+# step 4: data export and import
+
+# data frame
+xydata <- data.frame(y, x)
+
+# export data
