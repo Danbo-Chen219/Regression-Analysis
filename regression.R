@@ -8,8 +8,8 @@ rm(list = ls())
   rm(need)
 }
 
-
-
+install.packages("stargazer", repos = "https://cloud.r-project.org/")
+library(stargazer)
 # Load data
 # dplyr::mutate()
 #--------------------------------Code#1--------------------------------
@@ -58,14 +58,14 @@ rsq <- ess / tss # R-squared
 sigma2 <- rss / dfe # residual variance
 
 # step 3: Hypothesis testing
-print(x)
+print(c(sigma2, rsq))
 # t-test
 stdbhat <- diag(solve(t(x) %*% x) * sigma2) # standard errors of bhat
 
 # extracting the diagonal elements of the variance-covariance matrix (X'X)^-1
 t <- bhat / stdbhat # t-statistics
 
-prob1 <- 2 * pt(-abs(t), df = dfe) # p-values, using t distribution
+prob1 <- 2 * (1 - pt(abs(t), dfe)) # p-values, using t distribution
 prob2 <- 1 - pf(t^2, 1, dfe) # p-values, using F distribution
 
 # print estimated coefficients, their standard errors, t-statistics, and p-values
@@ -82,3 +82,14 @@ write.csv(xydata, file = "xydata.csv")
 
 # import data
 xydata.csv <- read.csv(file = "xydata.csv")
+
+# step 5: linear regression with lm function
+
+# use the imported data to run OLS regression
+ols <- lm(formula = y ~ x1 + x2, data = xydata.csv)
+
+summary(ols)
+ols$coefficients # estimated bhats
+ols$residuals # residuals ehat
+ols$fitted.values # yhat
+stargazer(ols, type = "text")
