@@ -8,7 +8,6 @@ rm(list = ls())
   rm(need)
 }
 
-install.packages("stargazer", repos = "https://cloud.r-project.org/")
 library(stargazer)
 # Load data
 # dplyr::mutate()
@@ -93,3 +92,59 @@ ols$coefficients # estimated bhats
 ols$residuals # residuals ehat
 ols$fitted.values # yhat
 stargazer(ols, type = "text")
+
+#----------------------------Code # 2-------------------------------------------
+
+getwd()
+dirname(getwd())
+install.packages("ggplot2", repos = "https://cloud.r-project.org/")
+install.packages("cowplot", repos = "https://cloud.r-project.org/")
+library(dplyr)
+library(ggplot2)
+library(cowplot)
+library(stargazer)
+# working directory where datasets are saved
+wagedata <- read.csv("wage2.csv")
+# loading wage data
+
+# pipe: https://www.youtube.com/watch?v=Stt3qEuIeso
+# dplyr package (included in tidyverse series)
+wagedata2 <- mutate(wagedata, logwage = log(wage), exper2 = exper^2)
+
+wagedata <- wagedata %>% mutate(logwage = log(wage), exper2 = exper^2) # %>%
+# mutate(exper3 = exper^3) #%>%
+# dplyr::select(-c("IQ","educ"))
+
+# computes the log of wages
+
+graph1 <- ggplot(wagedata, aes(x = wage)) +
+  geom_histogram(color = "black", fill = "gray")
+graph2 <- ggplot(wagedata, aes(x = logwage)) +
+  geom_histogram(color = "black", fill = "gray")
+plot_grid(graph1, graph2, labels = "AUTO")
+# plot_grid (come from cowplot package) allows plotting more than one graph in the same space
+ggsave("graph2.jpeg", plot = graph2, width = 6, height = 3.5, units = "in", dpi = 200, bg = "white")
+
+
+# Summary statistics
+wagedata %>%
+  dplyr::select(wage, educ, exper) %>%
+  stargazer(type = "text")
+
+wagedata <- dplyr::select(
+  wagedata,
+  c(
+    "logwage", "educ", "exper", "exper2",
+    "tenure", "married", "black", "south", "urban"
+  )
+)
+# extracting only the variables needed for the regression
+
+
+# OLS estimation--log-linear
+ols1 <- lm(logwage ~ educ + exper + exper2, data = wagedata)
+
+# OLS estimation--log-linear with controls
+ols2 <- lm(logwage ~ educ + exper + exper2 + tenure + married + black + south + urban, data = wagedata)
+
+stargazer(ols1, ols2, type = "text", title = "Wage Regression Results")
