@@ -29,6 +29,7 @@ x1 <- rnorm(n = n, mean = 2, sd = 4)
 x2 <- rnorm(n = n, mean = 10, sd = 1)
 e <- rnorm(n = n, mean = 0, sd = 3)
 
+
 b <- c(bo, b1, b2)
 x <- cbind(x0, x1, x2)
 y <- x %*% b + e
