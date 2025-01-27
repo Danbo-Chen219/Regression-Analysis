@@ -106,7 +106,7 @@ library(cowplot)
 library(stargazer)
 library(knitr)
 # working directory where datasets are saved
-wagedata <- read.csv("wage2.csv")
+wagedata <- read.csv("Regression-Analysis/wage2.csv")
 # loading wage data
 
 # pipe: https://www.youtube.com/watch?v=Stt3qEuIeso
