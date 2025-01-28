@@ -99,7 +99,7 @@ stargazer(ols, type = "text")
 getwd()
 dirname(getwd())
 # install.packages("ggplot2", repos = "https://cloud.r-project.org/")
-install.packages("knitr", repos = "https://cloud.r-project.org/")
+# install.packages("knitr", repos = "https://cloud.r-project.org/")
 library(dplyr)
 library(ggplot2)
 library(cowplot)
@@ -227,12 +227,12 @@ library(cowplot)
 library(stargazer)
 library(jtools)
 library(stringr)
-uganda <- read.csv("uganda.csv")
+uganda <- read.csv("Regression-Analysis/uganda.csv")
 
 uganda <- mutate(uganda, logfarmrev = log(sfarmrev))
 
 uganda <- uganda %>%
-  mutate(logfarmrev = log(sfarmrev))
+  mutate(logfarmrev = log(sfarmrev)) # Adding a New Column with mutate
 
 # computes and adds the log of farm revenue
 
