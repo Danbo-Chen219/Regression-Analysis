@@ -1,176 +1,171 @@
 ########################################
+{
+  want <- c("tidyverse", "boot", "lmtest", "sandwich", "lmtest", "stargazer")
+  need <- want[!(want %in% installed.packages()[, "Package"])]
+  if (length(need)) install.packages(need, repos = "https://cloud.r-project.org/")
+  lapply(want, function(i) require(i, character.only = TRUE))
+  rm(need)
+}
 rm(list = ls())
-cat("\14")
-
 library(tidyverse)
 library(boot)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+library(boot)
+####################### ----Question 2------##########################
 data <- read.csv("housepricedata.csv")
-
-model <- lm(lprice ~ llotsize + lsqrft + bdrms, data = data)
-
-summary(model)
-
+ols <- lm(lprice ~ llotsize + lsqrft + bdrms, data = data)
+# stargazer(ols, type = "text")
 boot_fn <- function(data, indices) {
   d <- data[indices, ] # Resample data
   coef(lm(lprice ~ llotsize + lsqrft + bdrms, data = d))
 }
-
 set.seed(123)
 boot_results <- boot(data, boot_fn, R = 1000)
-
 boot_se <- apply(boot_results$t, 2, sd)
-
+stargazer(ols, type = "text", title = "OLS Regression Results")
 results_table <- data.frame(
-  Coefficients = coef(model),
-  `Bootstrapped SE` = boot_se
-)
-
-results_table <- cbind(
-  results_table,
-  `P-Value` = summary(model)$coefficients[, 4],
-  `R-squared` = summary(model)$r.squared
-)
-# `P-Value` = summary(model)$coefficients[, 4]
-# Add goodness of fit directly
-# results_table$`R-squared` <- summary(model)$r.squared
-
+  Coefficients = coef(ols),
+  `Bootstrapped SE` = boot_se,
+  `P-Value` = summary(ols)$coefficients[, 4]
+) %>%
+  mutate(`R-squared` = summary(ols)$r.squared)
+# Display results
 print(results_table)
-
-
-##############################################################
-rm(list = ls())
-cat("\14")
-
-library(tidyverse)
-library(boot)
-
-data <- read.csv("housepricedata.csv")
-
-hist(data$price, main = "Distribution of Prices", xlab = "Price")
-hist(data$lotsize, main = "Distribution of Lotsize", xlab = "Lotsize")
-hist(data$sqrft, main = "Distribution of Sqrft", xlab = "Sqrft")
-model_levels <- lm(price ~ lotsize + sqrft + bdrms, data = data)
-
-summary(model_levels)
-
+####################### ----Question 2.2------##########################
+ols2 <- lm(price ~ lotsize + sqrft + bdrms, data = data)
+stargazer(ols, type = "text", title = " Regression (2) Results")
+boot_fn2 <- function(data, indices) {
+  d2 <- data[indices, ] # Resample data
+  coef(lm(price ~ lotsize + sqrft + bdrms, data = d2))
+}
+set.seed(123)
+boot_results2 <- boot(data, boot_fn2, R = 1000)
+boot_se <- apply(boot_results2$t, 2, sd)
+results_table <- data.frame(
+  Coefficients = coef(ols2),
+  `Bootstrapped SE` = boot_se,
+  `P-Value` = summary(ols2)$coefficients[, 4]
+) %>%
+  mutate(`R-squared` = summary(ols2)$r.squared)
+print(results_table)
+# Display the prediction results
 new_data <- data.frame(
   lotsize = 10000,
   sqrft = 2300,
   bdrms = 4
 )
-
-predicted_price <- predict(model_levels, newdata = new_data)
-
+predicted_price <- predict(ols2, newdata = new_data)
 cat("The predicted price is:", round(predicted_price, 0), "thousand dollars\n")
-
-predicted_with_ci <- predict(model_levels, newdata = new_data, interval = "confidence", level = 0.95)
-
+####################### ----Question 2.3------##########################
+predicted_with_ci <- predict(ols2, newdata = new_data, interval = "confidence", level = 0.95)
 cat("Predicted Price:", round(predicted_with_ci[1], 2), " thousand dollars\n")
-cat("95% Confidence Interval: [", round(predicted_with_ci[2], 2), ", ", round(predicted_with_ci[3], 2), "] dollars\n")
-
+cat("95% Confidence Interval: [", round(predicted_with_ci[2], 2), ", ", round(predicted_with_ci[3], 2), "] thousand dollars\n")
+####################### ----Question 2.4------##########################
 # Model in Levels
 model_levels <- lm(price ~ lotsize + sqrft + bdrms, data = data)
 summary(model_levels)$adj.r.squared
-
 # Model in Logs
 model_logs <- lm(lprice ~ llotsize + lsqrft + bdrms, data = data)
 summary(model_logs)$adj.r.squared
-
 print("The model with the higher adjusted R-squared better explains the variation in price.")
-
-# From residual perspectives
 # Residual plot for Levels
 plot(model_levels$fitted.values, model_levels$residuals,
   main = "Residuals (Levels Model)",
   xlab = "Fitted Values", ylab = "Residuals"
 )
 abline(h = 0, col = "red")
-
 # Residual plot for Logs
 plot(model_logs$fitted.values, model_logs$residuals,
   main = "Residuals (Logs Model)",
   xlab = "Fitted Values", ylab = "Residuals"
 )
 abline(h = 0, col = "red")
-
 print("Since the residuals from the logs model show more consistent variance and a better fit, the logs model is preferred")
-
-##########################################
+####################### ----Question 3------##########################
 rm(list = ls())
-cat("\14")
-
 library(tidyverse)
 library(boot)
 library(stargazer)
-install.packages("xtable")
+library(sandwich)
+library(lmtest)
+library(boot)
+getwd()
+dirname(getwd())
 data <- read.csv("epadata.csv")
-
 # Split the data into participants (pstatus = 1) and non-participants (pstatus = 0)
-participants <- subset(data, pstatus == 1)
-non_participants <- subset(data, pstatus == 0)
-
-str(data)
-colnames(data)
-
-# List of variables to analyze (excluding "pstatus" and "Co_name")
+participants <- data %>% filter(pstatus == 1)
+non_participants <- data %>% filter(pstatus == 0)
+# Variables to analyze (replace with actual variable names from your dataset)
 variables <- c(colnames(data)[2:11])
-# print(variables)
 # Initialize a results table
-results <- data.frame(
-  Variable = character(),
-  Mean_Participants = numeric(),
-  Mean_Non_Participants = numeric(),
-  P_Value = numeric(),
-  Significant = logical()
+results_table <- data.frame(
+  Variable = variables,
+  Participant_Mean = numeric(length(variables)),
+  Non_Participant_Mean = numeric(length(variables)),
+  P_Value = numeric(length(variables))
 )
-
-
-# Loop through each variable
-for (var in variables) {
-  # Compute means
-
-  mean_participants <- mean(participants[[var]])
-  mean_non_participants <- mean(non_participants[[var]])
-
+# Loop through each variable, calculate means and p-values
+for (i in seq_along(variables)) {
+  var <- variables[i]
+  # Calculate means
+  participant_mean <- mean(participants[[var]], na.rm = TRUE)
+  non_participant_mean <- mean(non_participants[[var]], na.rm = TRUE)
   # Perform t-test
-  t_test <- t.test(participants[[var]], non_participants[[var]])
-
+  t_test <- t.test(data[[var]] ~ data$pstatus)
   # Store results
-  results <- rbind(results, data.frame(
-    Variable = var,
-    Mean_Participants = mean_participants,
-    Mean_Non_Participants = mean_non_participants,
-    P_Value = t_test$p.value,
-    Significant = t_test$p.value < 0.05 # Significance level at 5%
-  ))
+  results_table$Participant_Mean[i] <- participant_mean
+  results_table$Non_Participant_Mean[i] <- non_participant_mean
+  results_table$P_Value[i] <- t_test$p.value
 }
-
-
-# Print the results table
-print(results)
-
-# Save results to a CSV file
-# write.csv(results, "results_comparison_table2.csv", row.names = FALSE)
-
+# Print the final results table
+stargazer(results_table, type = "text", title = "Comparison Table (Means and P-Values):", no.space = TRUE, single.row = TRUE, out = "3.1_Result.tex")
+# print("Comparison Table (Means and P-Values):")
+# print(results_table)
+# Draw conclusions
+cat("\nConclusions:\n")
+for (i in 1:nrow(results_table)) {
+  if (results_table$P_Value[i] < 0.05) {
+    cat(paste(
+      "Variable", results_table$Variable[i],
+      "shows a statistically significant difference (p < 0.05).\n"
+    ))
+  } else {
+    cat(paste(
+      "Variable", results_table$Variable[i],
+      "does not show a statistically significant difference (p >= 0.05).\n"
+    ))
+  }
+}
+######################## Question 3.2########################
 # Create squared terms for Fac and Empl
-data$fac_sq <- data$fac^2
-data$empl_sq <- data$empl^2
-
+data$facsq <- data$fac^2
+data$emplsq <- data$empl^2
 # Fit the OLS model
-model <- lm(release ~ fac + fac_sq + herf + empl + empl_sq + fg + strictbar +
+ols3 <- lm(release ~ fac + facsq + herf + empl + emplsq + fg + strictbar +
   educbar + lawbar + spendbar + pstatus, data = data)
-
-summary(model)
-
-# Generate a professionally styled table
-stargazer(model,
-  type = "text",
-  title = "Pollution Equation OLS Estimation",
-  dep.var.labels = "release",
+stargazer(ols3,
+  type = "text", title = "OLS Regression Results", no.space = TRUE,
+  single.row = TRUE,
+  out = "3.2_Result.tex"
+)
+clustered_se <- vcovCL(ols3, cluster = ~pstatus)
+######################## Question 3.3########################
+# Generate a professionally styled table using stargazer
+stargazer(ols3,
+  type = "text", # Use "html" or "latex" for better-formatted output
+  se = list(sqrt(diag(clustered_se))), # Use clustered standard errors
+  title = "OLS Regression Results with Clustered Standard Errors",
+  align = TRUE,
   covariate.labels = c(
-    "fac", "fac_sq", "herf", "empl", "empl_sq",
+    "fac", "facsq", "herf", "empl", "emplsq",
     "fg", "strictbar", "educbar", "lawbar",
     "spendbar", "pstatus"
   ),
-  align = TRUE
+  dep.var.labels = c("Toxic Releases"),
+  no.space = TRUE,
+  single.row = TRUE,
+  out = "3.3_Result.tex"
 )
+# cat(tab_out, sep = "\n", file = "results.tex")
