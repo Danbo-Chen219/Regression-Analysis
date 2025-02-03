@@ -1,0 +1,1 @@
+import delimited "hprice1.csv", clear
