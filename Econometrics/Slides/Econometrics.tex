@@ -1,5 +1,6 @@
 \documentclass[12pt, oneside]{article} 
 \usepackage{amsmath, amsthm, amssymb, calrsfs, wasysym, verbatim, bbm, color, graphics, geometry, multirow, booktabs}
+\usepackage{cancel}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{amsmath}
@@ -669,7 +670,261 @@ We further have:
 
 Therefore \( \tilde{\beta}^{IV} \) is consistent.
 
-\subsection{Two-Stage Least Squares (2SLS)}
+
+\subsection{Problem Set}
+
+\textbf*{Problem 2}
+Derive the limiting distribution of the two-stage least squares estimator (2SLS) and consistency of the estimator for the variance-covariance matrix. For each step make exactly clear which assumptions are needed. You may assume homoskedasticity of the errors, or not, but if so state it as an assumption.
+
+\textbf{(a). Verify that}
+\[
+\hat{\beta}_{2SLS} - \beta = \left[ X'Z(Z'Z)^{-1}Z'X \right]^{-1} X'Z(Z'Z)^{-1}Z'\varepsilon.
+\]
+
+\begin{enumerate} 
+    \item \textbf{Solution}
+\[
+\hat{\beta}_{2SLS} - \beta = \left[ X'Z(Z'Z)^{-1}Z'X \right]^{-1} X'Z(Z'Z)^{-1}Z'\varepsilon
+\]
+\[
+= \left[ \left(\frac{X'Z}{n}\right) \left(\frac{Z'Z}{n}\right)^{-1} \left(\frac{Z'X}{n}\right) \right]^{-1} 
+\left[ \left(\frac{X'Z}{n}\right) \left(\frac{Z'Z}{n}\right)^{-1} \left(\frac{Z'\varepsilon}{n}\right) \right].
+\]
+
+To use the Weak Law of Large Numbers (WLLN) in Hansen chapter 6, P164, the following assumptions are needed:
+
+ \item \textbf*{Assumptions}
+\begin{itemize}
+    \item \textbf{A1:} \( (y_i, x_i, z_i) \) are i.i.d.
+    \item \textbf{A2:} \( E|y_i|^2 < \infty \), \( E||x_i||^2 < \infty \), \( E||z_i||^2 < \infty \).
+\end{itemize}
+
+ \item \textbf*{Detour:}
+\begin{itemize}
+    \item The WLLN in Hansen only needs the first moment, as in A2: \( E|y_i| < \infty \), \( E||x_i|| < \infty \), \( E||z_i|| < \infty \); but in A2, we ask for the second moment to exist. The reason is that the cross product behaves like a degree-2 term. By the \textbf{Cauchy-Schwarz inequality}, one can prove that the expectation of the cross product exists and is finite using A2.
+    \item For example, using the inequality:
+    \[
+    E(|x_{ik} z_{i\ell} |) \leq \sqrt{E|x_{ik}^2| E|z_{i\ell}^2|}
+    \]
+    where \( x_{ik} \) is the \( k \)-th element, and \( z_{i\ell} \) is the \( \ell \)-th element. Since A2 ensures the second moment of \( x_i \) and \( z_i \) exists and is finite, it follows that \( E[x_i z_i'] \) exists and is finite.
+\end{itemize}
+
+ \item \textbf*{By the WLLN, we obtain:}
+\[
+\frac{X'Z}{n} \xrightarrow{p} Q_{XZ}, \quad \frac{Z'Z}{n} \xrightarrow{p} Q_{ZZ}, \quad \frac{Z'X}{n} \xrightarrow{p} Q_{ZX}.
+\]
+
+\item \textbf*{By the Continuous Mapping Theorem, and the additional assumptions:}
+\begin{itemize}
+    \item \textbf{A3:} \( E[z_i \varepsilon_i] = 0 \) (the \textbf{exogeneity condition}).
+    \item \textbf{A4:} \( E[z_i z_i'] = Q_{ZZ} \) is full rank/invertible/positive definite.
+    \item \textbf{A5:} \( E[z_i x_i'] \) has full column rank \( K \) (the \textbf{relevance condition}).
+\end{itemize}
+
+ \item \textbf*{Then, the 2SLS estimator is consistent as:}
+\[
+\hat{\beta}_{2SLS} - \beta \xrightarrow{P} (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1} Q_{XZ} Q_{ZZ}^{-1} \frac{\cancel{E[z_i \varepsilon_i]}}{0} = 0
+\]
+(Finite matrix).
+
+\end{enumerate}
+
+
+\textbf{b. Rescale the equation to converge to a random variable and establish the asymptotic distribution}
+
+\textbf*{Solution}
+\begin{enumerate}
+    \item Use the usual scaling, multiply by \( \sqrt{n} \), and
+
+\[
+\sqrt{n}(\hat{\beta}_{2SLS} - \beta) = [X'Z(Z'Z)^{-1}Z'X]^{-1} X'Z(Z'Z)^{-1}Z'\varepsilon
+\]
+
+\[
+= \left[ \left(\frac{X'Z}{n}\right) \left(\frac{Z'Z}{n}\right)^{-1} \left(\frac{Z'X}{n}\right) \right]^{-1} 
+\left[ \left(\frac{X'Z}{n}\right) \left(\frac{Z'Z}{n}\right)^{-1} \left(\frac{Z'\varepsilon}{\sqrt{n}}\right) \right].
+\]
+
+\item \textbf{Weak Law of Large Numbers (WLLN) and Central Limit Theorem (CLT)}
+WLLN and CLT are needed to obtain the distribution. To use the CLT as in Hansen chapter 6, P164, we need assumptions \textbf{A1}, \textbf{A2}, and:
+
+\begin{itemize}
+    \item \textbf{A6:} \( E||z_i z_i' \varepsilon_i^2|| < \infty \), since to use CLT for \( z_i \varepsilon_i \), we need \( z_i \varepsilon_i \) to have a \textbf{finite second moment}.
+    \item \textbf{A7:} \( \Omega = E[z_i z_i' \varepsilon_i^2] \) is positive definite, so it is a valid asymptotic variance matrix.
+\end{itemize}
+
+(Can have a different \textbf{A6'} as \( E|y_i|^4 < \infty \), \( E||z_i||^4 < \infty \), \( E||x_i||^4 < \infty \), and then use the \textbf{Cauchy-Schwarz inequality} to prove \( E||z_i z_i' \varepsilon_i^2|| < \infty \). Assumption \textbf{A6'} can replace both \textbf{A6} and \textbf{A2}, since a higher moment exists means a lower moment also exists.)
+
+\item \textbf{Application of the Central Limit Theorem}
+By the CLT, we have:
+
+\[
+\sqrt{n} \frac{Z'\varepsilon}{n} = \sqrt{n} \frac{1}{n} \sum_i z_i \varepsilon_i \xrightarrow{d} N(0, \Omega)
+\]
+
+\item \textbf{Combining with WLLN}
+\[
+\sqrt{n}(\hat{\beta}_{2SLS} - \beta) = \left[ \left(\frac{X'Z}{n}\right) \left(\frac{Z'Z}{n}\right)^{-1} \left(\frac{Z'X}{n}\right) \right]^{-1} 
+\left[ \left(\frac{X'Z}{n}\right) \left(\frac{Z'Z}{n}\right)^{-1} \left(\frac{Z'\varepsilon}{\sqrt{n}}\right) \right].
+\]
+
+\[
+\xrightarrow{d} (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1} Q_{XZ} Q_{ZZ}^{-1} N(0, \Omega) = N(0, V)
+\]
+
+where 
+
+\[
+V = (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1} (Q_{XZ} Q_{ZZ}^{-1} \boldsymbol{\Omega} Q_{ZZ}^{-1} Q_{ZX}) (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1}
+\]
+\end{enumerate}
+
+\textbf{(c). Estimator \( \hat{V} \) for the Variance-Covariance Matrix}
+
+\textbf{Solution: Detour}
+\begin{enumerate}
+    \item 
+    \begin{itemize}
+    \item This \( V \) is the variance-covariance matrix in \( \sqrt{n} (\hat{\beta}_{2SLS} - \beta) \xrightarrow{d} N(0, V) \), not the asymptotic variance of \( \hat{\beta}_{2SLS} \).
+    \item The asymptotic variance of \( \hat{\beta}_{2SLS} \) is \( \frac{V}{n} \).
+\end{itemize}
+
+\item \textbf{Under A8: Homoskedasticity, \( E[\varepsilon_i^2] = \sigma^2 < \infty \)}
+\[
+\Omega = E[z_i z_i' \varepsilon_i^2] = \sigma^2 E[z_i z_i'] = \sigma^2 Q_{ZZ}
+\]
+
+Thus, \( V \) can be reduced to:
+
+\[
+V = (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1} (Q_{XZ} Q_{ZZ}^{-1} \sigma^2 Q_{ZZ} Q_{ZZ}^{-1} Q_{ZX}) (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1}
+\]
+
+\[
+= \sigma^2 (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1}
+\]
+
+\item \textbf{Sample Analog \( \hat{V} \)}
+
+\[
+\hat{V} = \hat{\sigma}^2 (\hat{Q}_{XZ} \hat{Q}_{ZZ}^{-1} \hat{Q}_{ZX})^{-1}
+\]
+
+where
+
+\[
+\hat{Q}_{ZZ} = \frac{1}{n} \sum_{i=1}^{n} z_i z_i' = \frac{1}{n} Z'Z
+\]
+
+\[
+\hat{Q}_{XZ} = \frac{1}{n} \sum_{i=1}^{n} x_i z_i' = \frac{1}{n} X'Z
+\]
+
+\[
+\hat{Q}_{ZX} = \frac{1}{n} \sum_{i=1}^{n} z_i x_i' = \frac{1}{n} Z'X
+\]
+
+\[
+\hat{\sigma}^2 = \frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_i^2 = \frac{1}{n} \sum_{i=1}^{n} (y_i - x_i' \hat{\beta}_{2SLS})^2
+\]
+
+\item \textbf{Heteroskedasticity Case}
+
+If heteroskedasticity is present, then \( V \) cannot be simplified. With the \( Q \) items the same as above, the \( \Omega \) matrix can be estimated by:
+
+\[
+\hat{\Omega} = \frac{1}{n} \sum_{i=1}^{n} z_i z_i' \hat{\varepsilon}_i^2 = \frac{1}{n} \sum_{i=1}^{n} z_i z_i' (y_i - x_i' \hat{\beta}_{2SLS})^2
+\]
+
+\end{enumerate}
+
+\textbf{d. Establish consistency of \( \hat{V} \)}
+
+\textbf{Solution}
+
+\begin{enumerate}
+    \item 
+\textbf{Under A8: Homoskedasticity}, 
+
+\[
+\hat{V} = \hat{\sigma}^2 (\hat{Q}_{XZ} \hat{Q}_{ZZ}^{-1} \hat{Q}_{ZX})^{-1}
+\]
+
+The convergence in probability of \( (\hat{Q}_{XZ} \hat{Q}_{ZZ}^{-1} \hat{Q}_{ZX})^{-1} \) has been proven when establishing consistency, so the key is to show \( \hat{\sigma}^2 \) is a consistent estimator of \( \sigma^2 \).
+
+To show this, write:
+
+\[
+\hat{\varepsilon}_i = y_i - x_i' \hat{\beta} = x_i' \beta + \varepsilon_i - x_i' \hat{\beta} = x_i' (\beta - \hat{\beta}) + \varepsilon_i
+\]
+
+\[
+\hat{\varepsilon}_i^2 = \varepsilon_i^2 + 2(\beta - \hat{\beta})' x_i \varepsilon_i + (\beta - \hat{\beta})' x_i x_i' (\beta - \hat{\beta})
+\]
+
+Summing up:
+
+\[
+\hat{\sigma}^2 = \frac{1}{n} \sum_{i=1}^{n} \hat{\varepsilon}_i^2 = \frac{1}{n} \sum_{i=1}^{n} \varepsilon_i^2 
++ 2(\beta - \hat{\beta})' \frac{1}{n} \sum_{i=1}^{n} x_i \varepsilon_i 
++ (\beta - \hat{\beta})' \frac{1}{n} \sum_{i=1}^{n} x_i x_i' (\beta - \hat{\beta})
+\]
+
+\begin{itemize}
+    \item (1) By WLLN, \( \frac{1}{n} \sum_{i=1}^{n} \varepsilon_i^2 \xrightarrow{p} E[\varepsilon_i^2] = \sigma^2 \).
+    \item (3) By A2, \( E[x_i x_i'] < \infty \), and \( \hat{\beta}_{2SLS} \) is a consistent estimator of \( \beta \), using WLLN that \( \frac{1}{n} \sum_{i=1}^{n} x_i x_i' \xrightarrow{p} E[x_i x_i'] < \infty \), thus part (3) vanishes as \( n \to \infty \).
+    \item (2) Under A2, both \( E[x_{ik}^2] < \infty \) and \( E[\varepsilon_i^2] < \infty \), and by the \textbf{Cauchy-Schwarz inequality}:
+    \[
+    E(|x_{ik} \varepsilon_i|) \leq \sqrt{E[x_{ik}^2] E[\varepsilon_i^2]} < \infty.
+    \]
+    Using WLLN that \( \frac{1}{n} \sum_{i=1}^{n} x_i \varepsilon_i \xrightarrow{p} E[x_i \varepsilon_i] < \infty \), and again \( \hat{\beta}_{2SLS} \) is a consistent estimator of \( \beta \), part (2) vanishes as \( n \to \infty \).
+\end{itemize}
+
+Hence, we obtain:
+
+\[
+\hat{\sigma}^2 \xrightarrow{p} \sigma^2, \quad \text{and} \quad \hat{V} \xrightarrow{p} V.
+\]
+
+\item \textbf{Heteroskedasticity Case}
+
+\[
+V = (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1} (Q_{XZ} Q_{ZZ}^{-1} \mathbf{\Omega} Q_{ZZ}^{-1} Q_{ZX}) (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1}
+\]
+
+One needs to prove that:
+
+\[
+\hat{\Omega} = \frac{1}{n} \sum_{i=1}^{n} z_i z_i' (y_i - x_i' \hat{\beta}_{2SLS})^2 \xrightarrow{p} E[z_i z_i' \varepsilon_i^2].
+\]
+
+Inserting \( \hat{\varepsilon}_i \) back into \( \hat{\Omega} \):
+
+\[
+\hat{\Omega} = \frac{1}{n} \sum_{i=1}^{n} z_i z_i' \varepsilon_i^2 + 2 \frac{1}{n} \sum_{i=1}^{n} z_i z_i' [( \beta - \hat{\beta})' x_i \varepsilon_i] + \frac{1}{n} \sum_{i=1}^{n} z_i z_i' [( \beta - \hat{\beta})' x_i x_i' ( \beta - \hat{\beta})]
+\]
+
+\begin{itemize}
+    \item (1) By WLLN, \( \frac{1}{n} \sum_{i=1}^{n} z_i z_i' \varepsilon_i^2 \xrightarrow{p} E[z_i z_i' \varepsilon_i^2] \).
+    \item (2) In homoskedasticity, we could take \( (\beta - \hat{\beta}) \) out of summation, but here we cannot directly because:
+\end{itemize}
+
+\[
+\frac{1}{n} \sum_{i=1}^{n} z_i z_i' \left[ (\beta - \hat{\beta})' x_i \varepsilon_i \right]
+\]
+
+Instead, consider the \( k - \ell \) element in \( \hat{\Omega} \):
+
+\[
+\hat{\Omega}_{k\ell} = \frac{1}{n} \sum_{i=1}^{n} z_{ik} z_{i\ell} [(\beta - \hat{\beta})' x_i \varepsilon_i] = (\beta - \hat{\beta})' \frac{1}{n} \sum_{i=1}^{n} z_{ik} z_{i\ell} x_i \varepsilon_i
+\]
+
+Then follow similar logic as in homoskedasticity and show that:
+
+\[
+\hat{\Omega}_{k\ell} \xrightarrow{p} E[z_{ik} z_{i\ell} x_i \varepsilon_i] < \infty.
+\]
+\end{enumerate}
 \end{document}
 
 
