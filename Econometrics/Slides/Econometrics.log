@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.1.27)  4 FEB 2025 13:07
+This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.1.27)  4 FEB 2025 13:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -765,16 +765,16 @@ Missing character: There is no 变 in font [lmroman12-regular]:mapping=tex-text;
 Missing character: There is no 量 in font [lmroman12-regular]:mapping=tex-text;!
 Missing character: There is no 部 in font [lmroman12-regular]:mapping=tex-text;!
 Missing character: There is no 分 in font [lmroman12-regular]:mapping=tex-text;!
-[9] [10] [11] [12] [13] [14] [15] [16]
+[9] [10] [11] [12] [13] [14] [15] [16] [17]
 
 LaTeX Font Warning: Font shape `U/wasy/b/n' in size <8> not available
-(Font)              Font shape `U/wasy/m/n' tried instead on input line 1116.
+(Font)              Font shape `U/wasy/m/n' tried instead on input line 1220.
 
 
 LaTeX Font Warning: Font shape `U/wasy/b/n' in size <6> not available
-(Font)              Font shape `U/wasy/m/n' tried instead on input line 1116.
+(Font)              Font shape `U/wasy/m/n' tried instead on input line 1220.
 
-[17] [18] [19] (Econometrics.aux)
+[18] [19] [20] [21] (Econometrics.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
@@ -783,10 +783,10 @@ L3 programming layer <2024-01-04>
 Here is how much of TeX's memory you used:
  23983 strings out of 409617
  608319 string characters out of 5778276
- 1935191 words of memory out of 5000000
+ 1936191 words of memory out of 5000000
  45658 multiletter control sequences out of 15000+600000
  571733 words of font info for 104 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  84i,12n,93p,729b,479s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Econometrics.pdf (19 pages).
+Output written on Econometrics.pdf (21 pages).

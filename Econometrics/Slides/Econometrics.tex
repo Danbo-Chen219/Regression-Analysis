@@ -595,6 +595,110 @@ L \times L, \quad L \times n, \quad L \times k.
 
 \textcolor{blue}{\text{Replaced the \( Z \)}}.
 
+\textbf{2SLS}
+
+When the number of instrumental variables (\( m \)) exceeds the number of endogenous regressors (\( k \)), the usual inverse \( (Z'X)^{-1} \) does not exist because \( Z'X \) is not square or may not be full rank. To address this issue, we use the **Two-Stage Least Squares (2SLS) approach** to estimate the regression coefficients.
+
+\textbf{Steps of 2SLS}
+\textbf*{Step 1: First Stage Regression}
+To address endogeneity in \( X \), we first express \( X \) in terms of the instrumental variables \( Z \):
+
+\[
+X = ZC + V
+\]
+
+where:
+
+- \( Z \) is the matrix of instrumental variables (\( n \times m \)).
+
+- \( C \) is the coefficient matrix to be estimated.
+
+- \( V \) is the error term.
+
+Since \( m > k \), the equation for \( C \) is obtained using the **Ordinary Least Squares (OLS) estimator**:
+
+\[
+\hat{C} = (Z'Z)^{-1} Z'X.
+\]
+
+Thus, we obtain the predicted values of \( X \):
+
+\[
+\hat{X} = Z\hat{C} = Z (Z'Z)^{-1} Z' X.
+\]
+
+Since \( \hat{X} \) is the part of \( X \) that is explained by \( Z \), we can decompose:
+
+\[
+X = \hat{X} + \hat{V},
+\]
+
+where \( \hat{V} \) represents the residuals.
+
+\textbf{Step 2: Second Stage Regression}
+
+Now, instead of using the original \( X \) (which is endogenous), we use the predicted values \( \hat{X} \) to estimate the relationship between \( Y \) and \( X \):
+
+\[
+Y = X \tilde{\beta}^{2SLS} + \tilde{u}^{2SLS}.
+\]
+
+Since \( X \) contains endogenous variables, we use \( \hat{X} \) as an instrument:
+
+\[
+\tilde{\beta}^{2SLS} = (\hat{X}'\hat{X})^{-1} \hat{X}' Y.
+\]
+
+Expanding \( \tilde{\beta}^{2SLS} \):
+
+\[
+\tilde{\beta}^{2SLS} = [(X'Z)(Z'Z)^{-1} (Z'X)]^{-1} (X'Z)(Z'Z)^{-1} Z'Y.
+\]
+
+\textbf{Consistency of the Estimator}
+
+To show that \( \tilde{\beta}^{2SLS} \) is a **consistent estimator**, we take the probability limit:
+
+\[
+plim \, \tilde{\beta}^{2SLS} = \beta + plim \left[(X'Z)(Z'Z)^{-1} (Z'Z)\right]^{-1} \cdot plim X'Z(Z'Z)^{-1}Z'u.
+\]
+
+Since \( plim X'Z(Z'Z)^{-1}Z'u = 0 \) under exogeneity conditions, we obtain:
+
+\[
+plim \, \tilde{\beta}^{2SLS} = \beta.
+\]
+
+Thus, the estimator is **consistent**.
+
+\textbf*{Variance of \( \tilde{\beta}^{2SLS} \)}
+The variance of \( \tilde{\beta}^{2SLS} \) is given by:
+
+\[
+\widehat{\text{Var}} (\tilde{\beta}^{2SLS}) = \hat{\sigma}_u^2 (X'Z(Z'Z)^{-1}Z'X).
+\]
+
+where the estimated error variance is:
+
+\[
+\hat{\sigma}_u^2 = \frac{\tilde{u}'\tilde{u}}{n}.
+\]
+
+\textbf{Important Note:} The residuals are computed as:
+
+\[
+\tilde{u} = Y - X \tilde{\beta}^{2SLS}, \quad \text{not as} \quad Y = \hat{X} \tilde{\beta}^{2SLS}.
+\]
+
+\textbf{Conclusion}
+The **2SLS method** ensures that the estimator is **consistent** when \( X \) is endogenous. The key intuition is:
+
+1. The **first stage** removes endogeneity by regressing \( X \) on the instruments \( Z \), isolating the exogenous variation.
+
+2. The **second stage** uses this exogenous variation to estimate \( \beta \), ensuring that the regression is not biased by endogeneity.
+
+Thus, 2SLS provides an effective way to obtain **unbiased and consistent estimates** in the presence of endogeneity.
+
 \subsubsection{The Property of 2SLS}
 
 \[
