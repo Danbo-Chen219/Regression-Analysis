@@ -12,6 +12,8 @@
 \usepackage{pgfplots}
 \usepackage{xcolor}
 \renewcommand{\baselinestretch}{1.0}
+
+\DeclareMathOperator*{\plim}{plim}
 \geometry{tmargin=.75in, bmargin=.75in, lmargin=.75in, rmargin = .75in}  
 
 \newcommand{\R}{\mathbb{R}}
@@ -250,7 +252,7 @@ Y = \beta_{0,2SLS} + \beta_{1,2SLS} \times \hat{x} + \varepsilon_{2SLS}
 \end{enumerate}
 
 \subsection{Math Section}
-\textbf{Assumption:}
+\subsubsection{Assumption}
 
 \begin{enumerate}
     \item \textbf{Linearity}: \( Y = X\beta + \epsilon \).
@@ -305,6 +307,7 @@ We assume that there is an additional vector of variables \( z_i \), with \( L \
     \]
 \end{enumerate}
 
+\subsubsection{Property of OLS}
 \begin{enumerate}
         \item \textbf{OLS is biased}. 
         
@@ -438,7 +441,7 @@ We assume that there is an additional vector of variables \( z_i \), with \( L \
 
 \end{itemize}
 
-\textbf{WTS: Consistency}
+\subsubsection{WTS: Consistency}
 
 When \( L = k \), \( \mathbb{E}[z_i x_i'] = Q_{ZX} \), and:
 
@@ -591,6 +594,341 @@ L \times L, \quad L \times n, \quad L \times k.
 \]
 
 \textcolor{blue}{\text{Replaced the \( Z \)}}.
+
+\subsubsection{The Property of 2SLS}
+
+\[
+\hat{\beta}_{2SLS} = (X'P_Z X)^{-1} X'P_Z Y
+\]
+
+\[
+= (X'P_Z X)^{-1} X'P_Z (X \beta + \varepsilon)
+\]
+
+\[
+= \beta + (X'P_Z X)^{-1} X' P_Z \varepsilon
+\]
+
+We want to show that \( \hat{\beta}_{2SLS} \) is a consistent estimator, which requires proving that:
+
+\[
+(X'P_Z X)^{-1} X' P_Z \varepsilon \xrightarrow{p} 0.
+\]
+
+\textbf*{Step-by-Step Derivation}
+
+\[
+(X'P_Z X)^{-1} X' P_Z \varepsilon
+\]
+
+\[
+= (X'Z (Z'Z)^{-1} Z'X)^{-1} X' Z (Z'Z)^{-1} Z' \varepsilon
+\]
+
+\[
+= \left[ \left( \frac{X'Z}{n} \right) \left( \frac{Z'Z}{n} \right)^{-1} \left( \frac{Z'X}{n} \right) \right]^{-1} 
+\left( \frac{X'Z}{n} \right) \left( \frac{Z'Z}{n} \right)^{-1} \left( \frac{Z' \varepsilon}{n} \right).
+\]
+
+By the Weak Law of Large Numbers (WLLN):
+
+\[
+\frac{1}{n} \sum_{i=1}^{n} X_i z_i' \xrightarrow{p} E[X_i z_i']
+\]
+
+\[
+\frac{1}{n} \sum_{i=1}^{n} z_i z_i' \xrightarrow{p} E[z_i z_i']
+\]
+
+\[
+\frac{1}{n} \sum_{i=1}^{n} z_i X_i' \xrightarrow{p} E[z_i X_i']
+\]
+
+\[
+\frac{1}{n} \sum_{i=1}^{n} z_i \varepsilon_i \xrightarrow{p} E[z_i \varepsilon_i] = 0.
+\]
+
+Thus,
+
+\[
+(Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1} (Q_{XZ} Q_{ZZ}^{-1} 0) = 0.
+\]
+
+This shows that:
+
+\[
+\hat{\beta}_{2SLS} \xrightarrow{p} \beta.
+\]
+
+\textbf*{Asymptotic Normality}
+
+\[
+\sqrt{n} (\hat{\beta}_{2SLS} - \beta)
+\]
+
+\[
+= \left[ \frac{X'Z}{n} \frac{Z'Z}{n}^{-1} \frac{Z'X}{n} \right]^{-1} \frac{X'Z}{n} \frac{Z'Z}{n}^{-1} \frac{1}{\sqrt{n}} \sum_{i=1}^{n} z_i \varepsilon_i.
+\]
+
+By the Central Limit Theorem (CLT):
+
+\[
+\frac{1}{\sqrt{n}} \sum_{i=1}^{n} z_i \varepsilon_i \xrightarrow{d} N(0, \sigma^2 Q_{ZZ}).
+\]
+
+Since
+
+\[
+\text{Var}(Z'\varepsilon) = E[z_i \varepsilon_i \varepsilon_i z_i'] = E[\varepsilon_i^2 z_i z_i'] = \sigma^2 E[z_i z_i'] = \sigma^2 Q_{ZZ},
+\]
+
+we obtain:
+
+\[
+\sqrt{n} (\hat{\beta}_{2SLS} - \beta) \xrightarrow{d} N(0, \sigma^2 (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1}).
+\]
+
+Thus,
+
+\[
+\hat{\beta}_{2SLS} \sim N(\beta, \frac{\sigma^2}{n} (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1}).
+\]
+
+\subsubsection{Efficiency}
+\textbf*{Variance Comparison and Positive Semi-Definiteness}
+
+\textbf{Statement:} If \( \beta_{OLS} \) variance is smaller than \( \beta_{IV} \),
+
+\[
+A - B > 0 \quad \text{(positive semi-definite)}
+\]
+
+then \( B^{-1} - A^{-1} \) is also positive semi-definite.
+
+\textbf*{Derivation}
+
+\[
+Q_{XX} - (Q_{XZ} Q_{ZZ}^{-1} Q_{ZX})^{-1}
+\]
+
+\[
+= Q_{XX} - Q_{XZ} Q_{ZZ}^{-1} Q_{ZX}
+\]
+
+\[
+= \plim_{n \to \infty} \frac{X'X}{n} - \plim_{n \to \infty} \frac{X'Z}{n} \left( \plim_{n \to \infty} \frac{Z'Z}{n} \right)^{-1} \plim_{n \to \infty} \frac{Z'X}{n}
+\]
+
+\[
+= \plim_{n \to \infty} \left[ \frac{X'X}{n} - \frac{X'Z}{n} (Z'Z/n)^{-1} Z'X/n \right]
+\]
+
+\[
+= \plim_{n \to \infty} \left[ \frac{X'(I - P_Z) X}{n} \right] = \plim_{n \to \infty} \frac{X' M_Z X}{n}
+\]
+
+where \( M_Z = I - P_Z \) and \( P_Z = Z (Z'Z)^{-1} Z' \).
+
+\textbf{If \( A \) is positive semi-definite, then \( A \) is positive semi-definite, where \( A_n \xrightarrow{p} A \).}
+
+\textbf*{Important Observation}
+\[
+X' M_Z X = X' M_Z M_Z X = X' M_Z (X' M_Z)
+\]
+
+For any \( r \neq 0 \), let \( V = r' (X' M_Z) \),
+
+\[
+r' X' M_Z X r' = \gamma' X' M_Z X M_Z X r' = \gamma' \mathbb{D} \gamma = \sum_{i=1}^{p} v_i^2
+\]
+
+\[
+\sigma_{IV}^2 \geq \sigma_{OLS}^2.
+\]
+
+Thus, the asymptotic variance satisfies:
+
+\[
+\text{Asy. Var} (\beta_{OLS}) \leq \text{Asy. Var} (\beta_{IV}).
+\]
+
+\textbf*{Conclusion:}
+
+However, note that \( \sigma^2 \) is still useful, so further testing is needed.
+
+\subsubsection{Test}
+\begin{enumerate}
+    \item \textbf{Hausman Test}
+    \begin{itemize}
+        \item \textbf{Null Hypothesis}
+            \[
+            H_0: E[\varepsilon_i | x_i] = 0 \quad \Rightarrow \quad \text{Exogeneity}
+            \]
+
+            \begin{itemize}
+                \item Under \( H_0 \), IV and OLS are consistent.
+            \end{itemize}
+
+        \item Define the difference:
+
+            \[
+            d = \hat{\beta}_{IV} - \hat{\beta}_{OLS}
+            \]
+
+            (similar to a linear restriction). Under \( H_0 \), 
+
+            \[
+            d \xrightarrow{p} 0.
+            \]
+
+        \item \textbf{Test Statistic}
+            If we can derive:
+
+            \[
+            \sqrt{n} d \xrightarrow{d} N(0, V),
+            \]
+
+            and estimate \( V \) by \( \hat{V} \), then we can test \( H_0 \) using the Wald statistic:
+
+            \[
+            W = \sqrt{n} d' \hat{V}^{-1} \sqrt{n} d = n d' \hat{V}^{-1} d \xrightarrow{d} \chi^2(r).
+            \]
+
+        \item \textbf{Variance of \( d \)}
+            \[
+            \text{Var}(\hat{\beta}_{IV} - \hat{\beta}_{OLS})
+            \]
+
+            \[
+            = \text{Var}(\hat{\beta}_{IV}) + \text{Var}(\hat{\beta}_{OLS}) - 2 \text{Cov}(\hat{\beta}_{IV}, \hat{\beta}_{OLS}).
+            \]
+
+        \item \textbf{Hausman’s Principle}
+
+            Let \( b_E \) be an estimator of \( \beta \) such that:
+
+            \[
+            \sqrt{n} (b_E - \beta) \xrightarrow{d} N(0, V_E).
+            \]
+
+            Suppose \( b_E \) is efficient in the sense that for any other estimator \( b \) of \( \beta \) such that:
+
+            \[
+            \sqrt{n} (b - \beta) \xrightarrow{d} N(0, V),
+            \]
+
+            we have:
+
+            \[
+            V \geq V_E.
+            \]
+
+            Let \( b_I \) be an inefficient estimator of \( \beta \), namely:
+
+            \[
+            \sqrt{n} (b_I - \beta) \xrightarrow{d} N(0, \Sigma), \quad \text{where } \Sigma \geq V_E.
+            \]
+
+            Then the asymptotic variance satisfies:
+
+            \[
+            \text{Asy. Var}(b_E, b_I) = \text{Asy. Var}(b_E).
+            \]
+            \item \textbf{Proof of a Scalar Case}
+
+            Let \( \beta \) be a scalar.
+            
+            Consider an estimator:
+            
+            \[
+            \hat{\beta} = \alpha b_I + (1 - \alpha) b_E = b_E + d (b_I - b_E)
+            \]
+            
+            for a constant \( \alpha \).
+            
+            Then,
+            
+            \[
+            \sqrt{n} (\hat{\beta} - \beta) \xrightarrow{d} N(0, \Omega).
+            \]
+            
+            \subsection*{Asymptotic Variance}
+            \[
+            \Omega = \text{Asy. Var}[b_E + d (b_I - b_E)]
+            \]
+            
+            \[
+            = \text{Asy. Var}[b_E] + d^2 \text{Asy. Var}[b_I - b_E] + 2 d \text{Asy. Cov}(b_E, b_I - b_E)
+            \]
+            
+            \[
+            = \text{Asy. Var}[b_E] + 2 d \text{Asy. Cov}(b_E, b_I - b_E) + d^2 \text{Asy. Var}(b_I - b_E).
+            \]
+            
+            \textbf{Minimization Condition}
+            \[
+            \Omega \text{ is minimized when } d = - \frac{\text{Asy. Cov}(b_E, b_I - b_E)}{\text{Asy. Var}(b_I - b_E)}.
+            \]
+            
+            \textbf{Efficiency Argument}
+            If \( \alpha^* \neq 0 \), then \( \hat{\beta} \) with \( \alpha = \alpha^* \) will have a smaller asymptotic variance than \( \hat{\beta} \) with \( \alpha = 0 \), which contradicts the efficiency of \( b_E \).
+            
+            Thus, we conclude:
+            
+            \[
+            \alpha^* = 0 \quad \Rightarrow \quad \text{Asy. Cov}(b_E, b_I - b_E) = 0.
+            \]
+            
+            \textbf{Final Covariance Expression}
+            Using the identity:
+            
+            \[
+            \text{Cov}(A + B, C) = \text{Cov}(A, C) + \text{Cov}(B, C),
+            \]
+            
+            we obtain:
+            
+            \[
+            \text{Asy. Cov}(b_I, b_E) - \underbrace{\text{Asy. Cov}(b_E, b_E)}_{\text{Asy. Var}(b_E)} = 0.
+            \]
+            
+        \item \textbf{Final Test Statistic}
+
+            \[
+            \sqrt{n} d \xrightarrow{d} N(0, V),
+            \]
+
+            where:
+
+            \[
+            V = \text{Asy. Var}(\hat{\beta}_{IV} - \hat{\beta}_{OLS})
+            \]
+
+            \[
+            = \text{Asy. Var}(\hat{\beta}_{IV}) - \text{Asy. Var}(\hat{\beta}_{OLS}) - 2 \text{Asy. Cov}(\hat{\beta}_{IV}, \hat{\beta}_{OLS})
+            \]
+
+            \[
+            = \text{Asy. Var}(\hat{\beta}_{IV}) - \text{Asy. Var}(\hat{\beta}_{OLS}).
+            \]
+
+            Let:
+
+            \[
+            \hat{V}_{IV} \xrightarrow{p} \text{Asy. Var}(\hat{\beta}_{IV}),
+            \]
+
+            \[
+            \hat{V}_{OLS} \xrightarrow{p} \text{Asy. Var}(\hat{\beta}_{OLS}).
+            \]
+
+            Then the final test statistic is:
+
+            \[
+            W = n d' (\hat{V}_{IV} - \hat{V}_{OLS})^{-1} d \xrightarrow{d} \chi^2(r).
+            \]
+        \end{itemize}
+    \end{enumerate}
 
 \textbf{Question: Does the instrumental variable \( z \) need to be uncorrelated with the dependent variable \( y \)?}
 
