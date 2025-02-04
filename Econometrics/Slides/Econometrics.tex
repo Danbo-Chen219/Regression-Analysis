@@ -1,0 +1,675 @@
+\documentclass[12pt, oneside]{article} 
+\usepackage{amsmath, amsthm, amssymb, calrsfs, wasysym, verbatim, bbm, color, graphics, geometry, multirow, booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{setspace}
+\usepackage{tikz}
+\usetikzlibrary{trees, positioning}
+\usepackage{pgfplots}
+\usepackage{xcolor}
+\renewcommand{\baselinestretch}{1.0}
+\geometry{tmargin=.75in, bmargin=.75in, lmargin=.75in, rmargin = .75in}  
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Cdot}{\boldsymbol{\cdot}}
+
+
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{conv}{Convention}
+\newtheorem{rem}{Remark}
+\newtheorem{lem}{Lemma}
+\newtheorem{cor}{Corollary}
+
+
+\title{Econometrics and Applications}
+\author{Kirby CHEN}
+\date{Academic Year 2024-2025}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\vspace{.25in}
+
+\section{Lecture 3: Endogeneity and Instrumental Variables}
+
+\subsection{Motivation and Overlook}
+
+Example:
+\begin{itemize}
+    \item Omitted variables bias
+    \item Measurement error
+    \item Simultaneous equations bias (reverse causality)
+\end{itemize}
+
+\textbf{Our Goal}
+
+\[
+Y = \beta_0 + \beta_1 X + \varepsilon
+\]
+
+The endogenous variable \( x \) has a real impact on \( Y \), and we aim to find the true value of \( \beta_1 \).
+
+\begin{enumerate}
+\item \textbf{Using an Instrumental Variable to Derive the Model's Covariance}
+
+\[
+Y = \beta_0 + \beta_1 X + \varepsilon
+\]
+
+Taking the covariance of both sides with the instrumental variable \( z \):
+
+\[
+\text{cov}(Y, z) = \text{cov}(\beta_0 + \beta_1 X + \varepsilon, z)
+\]
+
+Expanding the covariance expression:
+
+\[
+\text{cov}(Y, z) = \text{cov}(\beta_0, z) + \beta_1 \times \text{cov}(X, z) + \text{cov}(\varepsilon, z)
+\]
+
+Since the instrumental variable \( z \) is uncorrelated with both \( \beta_0 \) and the error term \( \varepsilon \), these covariance terms disappear:
+
+\[
+\text{cov}(Y, z) = \beta_1 \times \text{cov}(X, z)
+\]
+
+Solving for \( \beta_1 \):
+
+\[
+\beta_1 = \frac{\text{cov}(Y, z)}{\text{cov}(X, z)}
+\]
+
+\textbf{Instrumental Variables (IV) estimator of} \( \beta_1 \), \( \beta_{IV} \).
+
+\item \textbf{Reduced-form Equation: Indirect Least Square, ILS}
+
+\[
+x = \delta_0 + \delta_1 \times z + u
+\]
+
+\[
+Y = \pi_0 + \pi_1 \times z + v
+\]
+
+\textbf{Reduced-form equation:} Writing an endogenous variable in terms of exogenous variables.
+
+\[
+x = \delta_0 + \delta_1 \times z + u
+\]
+\[
+Y = \pi_0 + \pi_1 \times z + v
+\]
+
+\[
+\delta_1 = \frac{\text{cov}(x, z)}{\text{var}(z)}
+\]
+\[
+\pi_1 = \frac{\text{cov}(Y, z)}{\text{var}(z)}
+\]
+
+\textit{We know:}
+
+\[
+Y = \beta_0 + \beta_1 \times x + \varepsilon
+\]
+
+\textbf{Regression coefficient:}
+
+\[
+\beta_1 = \frac{\text{cov}(Y, x)}{\text{var}(x)}
+\]
+
+Using the instrumental variable:
+
+\[
+\frac{\pi_1}{\delta_1} = \frac{\frac{\text{cov}(Y, z)}{\text{var}(z)}}{\frac{\text{cov}(x, z)}{\text{var}(z)}} = \frac{\text{cov}(Y, z)}{\text{cov}(x, z)}
+= \beta_{IV} = \beta_1
+\]
+
+\[
+x = \delta_0 + \delta_1 \times z + u
+\]
+
+\[
+Y = \pi_0 + \pi_1 \times z + v
+\]
+
+\[
+\delta_1 = \frac{\text{cov}(x, z)}{\text{var}(z)}
+\]
+\[
+\pi_1 = \frac{\text{cov}(Y, z)}{\text{var}(z)}
+\]
+
+\textbf*{Reduced-form Equation}
+
+\[
+x = \delta_0 + \delta_1 \times z + u
+\]
+
+\[
+Y = \pi_0 + \pi_1 \times z + v
+\]
+
+\[
+\delta_1 = \frac{\text{cov}(x, z)}{\text{var}(z)}
+\]
+\[
+\pi_1 = \frac{\text{cov}(Y, z)}{\text{var}(z)}
+\]
+
+\textbf*{Indirect Least Squares (ILS) Method}
+
+\[
+Y = \beta_0 + \beta_1 \times x + \varepsilon
+\]
+
+\[
+= \beta_0 + \beta_1 \times (\delta_0 + \delta_1 \times z + u) + \varepsilon
+\]
+
+\[
+= \beta_0 + \beta_1 \times \delta_0 + \beta_1 \times \delta_1 \times z + \beta_1 \times u + \varepsilon
+\]
+
+\[
+= (\beta_0 + \beta_1 \times \delta_0) + \beta_1 \times \delta_1 \times z + (\beta_1 \times u + \varepsilon)
+\]
+
+\[
+\pi_0 = \beta_0 + \beta_1 \times \delta_0, \quad
+\pi_1 = \beta_1 \times \delta_1, \quad
+v = \beta_1 \times u + \varepsilon
+\]
+
+\textbf{Question: when IVs more than endogenous variables, the above two method fails.}
+
+\item \textbf{Two Stage Least Squares (2SLS/TSLS)}
+
+\textit*{First Stage}
+\[
+x = \delta_0 + \delta_1 \times z + u
+\]
+\[
+x = \hat{\delta_0} + \hat{\delta_1} \times z + \hat{u}
+\]
+\[
+\hat{x} = \delta_0 + \delta_1 \times z
+\]
+
+\textit*{Second Stage}
+\[
+Y = \beta_{0,2SLS} + \beta_{1,2SLS} \times \hat{x} + \varepsilon_{2SLS}
+\]
+
+\textit*{Does the Model Have Endogeneity?}
+\[
+Y = \beta_0 + \beta_1 \times x + \varepsilon
+\]
+\[
+= \beta_0 + \beta_1 \times (\hat{x} + \hat{u}) + \varepsilon
+\]
+\[
+= \beta_0 + \beta_1 \times \hat{x} + \beta_1 \times \hat{u} + \varepsilon
+\]
+
+\[
+\text{cov}(\hat{x}, \varepsilon_{2SLS}) = \text{cov}(\hat{x}, \beta_1 \times \hat{u} + \varepsilon)
+\]
+
+\[
+= \beta_1 \times \text{cov}(\hat{x}, \hat{u}) + \text{cov}(\hat{x}, \varepsilon) = 0
+\]
+
+\textbf{When there exists many IVs:}
+
+\textit*{First Stage}
+\[
+x = \delta_0 + \delta_1 \times z_1 + \delta_2 \times z_2 + u
+\]
+\[
+\hat{x} = \hat{\delta_0} + \hat{\delta_1} \times z_1 + \hat{\delta_2} \times z_2
+\]
+
+\textit*{Second Stage}
+\[
+Y = \beta_{0,2SLS} + \beta_{1,2SLS} \times \hat{x} + \varepsilon_{2SLS}
+\]
+\end{enumerate}
+
+\subsection{Math Section}
+\textbf{Assumption:}
+
+\begin{enumerate}
+    \item \textbf{Linearity}: \( Y = X\beta + \epsilon \).
+    \item \textbf{Full rank}: \( \text{rank}(X) = k \).
+    \item \textbf{Exogeneity}: \( \mathbb{E}[\epsilon | X] = 0 \).
+    
+    \begin{center}
+        \fbox{
+        \begin{minipage}{0.9\linewidth}
+            Law of iterated expectations:
+            \[
+            \mathbb{E}[\epsilon] = \mathbb{E}[\mathbb{E}[\epsilon | X]] = \mathbb{E}[0] = 0.
+            \]
+        \end{minipage}
+        }
+    \end{center}
+
+    \item \textbf{Homoscedasticity and nonautocorrelation}:
+    \[
+    \text{Var}(\epsilon_i | X) = \sigma^2, \quad i = 1,2, \dots, n.
+    \]
+    \[
+    \text{Var}(\epsilon_i, \epsilon_j | X) = 0, \quad i \neq j, \quad \text{Var}(\epsilon_i \epsilon) = \sigma^2 I.
+    \]
+
+    \item \( X \) may be fixed and random.
+\end{enumerate}
+
+We assume that there is an additional vector of variables \( z_i \), with \( L \geq k \).
+
+\begin{enumerate}
+    \item[(1)] \textbf{Exogeneity}: \( z_i \) is uncorrelated with disturbance \( \epsilon_i \).
+    \item[(2)] \textbf{Relevance}: \( z_i \) is correlated with explanatory variable \( x_i \).
+    \item[(3)] \textbf{Homoscedasticity}: \( \mathbb{E}[\epsilon_i^2 | z_i] = \sigma^2 \).
+    \item[(4)] \textbf{Random Sampling} \((x_i, z_i, \epsilon_i) \overset{iid}{\sim} \).
+    \item[(5)] \textbf{Moments of \( x_i \) and \( z_i \)}:
+    \[
+    \mathbb{E}[x_i x_i'] = Q_{XX} < \infty, \quad \text{rank}(Q_{XX}) = k.
+    \]
+    \[
+    \mathbb{E}[z_i z_i'] = Q_{ZZ} < \infty, \quad \text{rank}(Q_{ZZ}) = L.
+    \]
+    \[
+    \mathbb{E}[z_i x_i'] = Q_{ZX} < \infty, \quad \text{rank}(Q_{ZX}) = k.
+    \]
+    \[
+    (L \times k) \quad \text{(since \( L \geq k \))}.
+    \]
+    \item[(6)] \textbf{Exogeneity of Instruments}:
+    \[
+    \mathbb{E}[\epsilon_i | b_i] = 0.
+    \]
+\end{enumerate}
+
+\begin{enumerate}
+        \item \textbf{OLS is biased}. 
+        
+        \[
+        \hat{\beta} = \beta + (X'X)^{-1} X' \epsilon.
+        \]
+
+        \[
+        \mathbb{E}[\hat{\beta} | X] = \beta + \mathbb{E}[(X'X)^{-1} X' \epsilon | X].
+        \]
+
+        \[
+        = \beta + (X'X)^{-1} X' \mathbb{E}[\epsilon | X].
+        \]
+
+        \[
+        \textcolor{red}{= \beta + (X'X)^{-1} X' \eta \neq \beta}
+        \] 
+        \textcolor{red}{(biased)}.
+        \item \textbf{OLS is inconsistent in big sample}.
+    \end{enumerate}
+
+\textbf{Recall}: \( \mathbb{E}[\epsilon | X] = 0 \), \quad \( \mathbb{E}[\epsilon_i x_i] \)
+
+\[
+= \mathbb{E} \left[ \mathbb{E}[\epsilon_i x_i | X] \right] = \mathbb{E} \left[ x_i \mathbb{E}[\epsilon_i | X] \right] = 0.
+\]
+
+\noindent\hrulefill
+
+\begin{enumerate}
+    \setcounter{enumi}{1}
+    \item \textbf{OLS is inconsistent}.
+    
+    \[
+    \mathbb{E}[x_i \epsilon_i] = \mathbb{E}[x_i \eta] \neq 0.
+    \]
+    
+    \[
+    \hat{\beta} = \beta + (X'X)^{-1} X' \epsilon = \beta + \left( \frac{1}{n} \sum_{i=1}^{n} x_i x_i' \right)^{-1} \left( \frac{1}{n} \sum_{i=1}^{n} x_i \epsilon_i \right).
+    \]
+
+    \[
+    \frac{1}{n} \sum_{i=1}^{n} x_i x_i' \xrightarrow{p} Q_{XX}
+    \]
+
+    \[
+    \frac{1}{n} \sum_{i=1}^{n} x_i \epsilon_i \xrightarrow{p} \eta \neq 0.
+    \]
+
+    \[
+    \Rightarrow \hat{\beta} \xrightarrow{p} \neq \beta.
+    \]
+
+    \textcolor{red}{moment non.}
+
+    \[
+    \mathbb{E}[x_i \epsilon_i] = \mathbb{E}[x_i (y_i - x_i' \beta)] = 0.
+    \]
+
+    \textcolor{red}{OLS?} \textcolor{yellow}{整体矩条件}.
+
+    \item \textbf{A method of moment estimator \( \beta_{\text{mom}} \) sets the sample analogue to 0}:
+
+    \[
+    \frac{1}{n} \sum_{i=1}^{n} x_i (y_i - x_i' \beta_{\text{mom}}) = 0.
+    \]
+
+    \textcolor{red}{构本}
+
+    \[
+    \sum_{i=1}^{n} x_i y_i - \left( \sum_{i=1}^{n} x_i x_i' \right) \beta_{\text{mom}} = 0.
+    \]
+
+    \textcolor{yellow}{矩阵转移}.
+
+    \[
+    \left( \sum_{i=1}^{n} x_i x_i' \right) \beta_{\text{mom}} = \sum_{i=1}^{n} x_i y_i.
+    \]
+
+    \[
+    \beta_{\text{mom}} = \left( \sum_{i=1}^{n} x_i x_i' \right)^{-1} \left( \sum_{i=1}^{n} x_i y_i \right).
+    \]
+
+    \[
+    = (X'X)^{-1} X' y = \beta_{\text{ols}}.
+    \]
+\end{enumerate}
+
+\textbf{IV Model Assumptions}
+
+\begin{itemize}
+    \item (1), (2), (3) were replaced with (7).
+    \[
+    \mathbb{E}[x_i | z_i] = 0.
+    \]
+
+    \[
+    \mathbb{E}[z_i \epsilon_i] = \mathbb{E}[\mathbb{E}[z_i \epsilon_i | z_i]] = \mathbb{E}[z_i \mathbb{E}[\epsilon_i]] = 0.
+    \]
+
+    \[
+    \mathbb{E}[z_i (y_i - x_i' \beta)] = 0.
+    \]
+    (In sample),
+    \[
+    \frac{1}{n} \sum_{i=1}^{n} z_i' (y_i - x_i' \beta_{IV}) = 0.
+    \]
+
+    \[
+    \sum_{i=1}^{n} z_i y_i - \left( \sum_{i=1}^{n} z_i x_i' \right) \beta_{IV} = 0.
+    \]
+    
+    \[
+    \left[ \sum_{i=1}^{n} z_i x_i' \right] \beta_{IV} = \sum_{i=1}^{n} z_i y_i.
+    \]
+
+    \textbf{If} \( L = k \), then
+
+    \[
+    \beta_{IV} = \left( \sum_{i=1}^{n} z_i x_i' \right)^{-1} \left( \sum_{i=1}^{n} z_i y_i \right).
+    \]
+
+    \[
+    \beta_{IV} = (Z'X)^{-1} Z' y.
+    \]
+
+    \[
+    \beta_{OLS} = (X'X)^{-1} X' y.
+    \]
+
+\end{itemize}
+
+\textbf{WTS: Consistency}
+
+When \( L = k \), \( \mathbb{E}[z_i x_i'] = Q_{ZX} \), and:
+
+\[
+\hat{\beta}_{IV} = (Z'X)^{-1} Z' y.
+\]
+
+\[
+= (Z'X)^{-1} Z' (X\beta + \epsilon).
+\]
+
+\[
+= \beta + (Z'X)^{-1} Z' \epsilon.
+\]
+
+\[
+= \beta + \left( \frac{1}{n} \sum_{i=1}^{n} z_i x_i' \right)^{-1} \left( \frac{1}{n} \sum_{i=1}^{n} z_i \epsilon_i \right).
+\]
+
+\[
+\xrightarrow{p} \mathbb{E}[z_i x_i'] = Q_{ZX}, \quad \textcolor{red}{\text{for using WLLN}}.
+\]
+
+\[
+\Rightarrow \hat{\beta}_{IV} \xrightarrow{p} \beta + (\mathbb{E}[z_i x_i'])^{-1} \mathbb{E}[z_i \epsilon_i].
+\]
+
+\[
+\mathbb{E}[z_i \epsilon_i] = \mathbb{E}[\mathbb{E}[z_i \epsilon_i | z_i]] = \mathbb{E}[z_i \mathbb{E}[\epsilon_i | z_i]].
+\]
+
+\[
+= \mathbb{E}[z_i \cdot 0] = 0.
+\]
+
+\[
+\Rightarrow \hat{\beta}_{IV} \xrightarrow{p} \beta.
+\]
+
+\textbf{IV estimator is consistent.}
+
+\textbf{WTS: Asymptotic normality proof}
+
+\[
+\hat{\beta}_{IV} - \beta = \left( \frac{1}{n} \sum_{i=1}^{n} z_i x_i' \right)^{-1} \left( \frac{1}{n} \sum_{i=1}^{n} z_i \epsilon_i \right).
+\]
+
+By CLT,
+
+\[
+\sqrt{n} (\hat{\beta}_{IV} - \beta) = \left[ \frac{1}{n} \sum_{i=1}^{n} z_i x_i' \right]^{-1} \left( \frac{1}{\sqrt{n}} \sum_{i=1}^{n} z_i \epsilon_i \right).
+\]
+
+\[
+\xrightarrow{p} Q_{ZX}
+\]
+
+\[
+\sqrt{n} \left( \frac{1}{n} \sum_{i=1}^{n} z_i \epsilon_i \right) = \sqrt{n} \left( \frac{1}{n} \sum_{i=1}^{n} z_i \epsilon_i - \mathbb{E}[z_i \epsilon_i] \right).
+\]
+
+\[
+\xrightarrow{d} N(0, \sigma^2 Q_{ZZ}).
+\]
+
+\[
+\text{Var}(z_i \epsilon_i) = \mathbb{E} [ z_i \epsilon_i - 0 ] (z_i \epsilon_i - 0)'.
+\]
+
+\[
+= \mathbb{E} [ z_i \epsilon_i \epsilon_i' z_i' ] = \mathbb{E} [ \epsilon_i^2 z_i z_i' ].
+\]
+
+\textcolor{yellow}{\text{稳定}.}
+
+\[
+= \mathbb{E} [ \mathbb{E} [\epsilon_i^2 | z_i] z_i z_i' ].
+\]
+
+\[
+= \sigma^2 \mathbb{E} [ z_i z_i' ] = \sigma^2 Q_{ZZ}.
+\]
+
+By Slutsky's theorem,
+
+\[
+\sqrt{n} (\hat{\beta}_{IV} - \beta) \rightarrow d N(0, \sigma^2 Q_{ZX}^{-1} Q_{ZZ} Q_{ZX}^{-1}).
+\]
+
+\textcolor{red}{\text{Consistency}.}
+
+\textbf{But IV is biased}:
+
+\[
+\hat{\beta}_{IV} = \beta + (Z'X)^{-1} Z' \epsilon.
+\]
+
+\[
+\mathbb{E}[\hat{\beta}_{IV} | X, Z] = \beta + (Z'X)^{-1} Z' \mathbb{E}[\epsilon | X, Z] \neq \beta.
+\]
+
+\[
+\hat{\beta}_{IV} = (Z'X)^{-1} Z' y.
+\]
+
+Matrix dimensions:
+\[
+Z: n \times L, \quad Z': L \times n, \quad X: n \times k.
+\]
+
+\[
+L > k.
+\]
+
+\textbf{When \( L > k \)}:
+
+\[
+X \to Z \text{列空间 projection}.
+\]
+
+\[
+P_Z = Z (Z'Z)^{-1} Z'.
+\]
+
+\[
+= Z C Z' Z'.
+\]
+
+\textcolor{yellow}{\( L \) 维投影，\( L \) 与 \( Z \) 相同空间， 统计回归与 \( Z \) 相对应}.
+\textcolor{yellow}{\text{工具变量部分}.}
+
+\[
+\hat{X} = P_Z X.
+\]
+
+\[
+\hat{X} = Z (Z'Z)^{-1} Z' X.
+\]
+
+\[
+L \times L, \quad L \times n, \quad L \times k.
+\]
+
+\[
+\hat{\beta}_{IV} = (\hat{X}' \hat{X})^{-1} \hat{X}' y.
+\]
+
+\[
+= (X' P_Z X)^{-1} X' P_Z y.
+\]
+
+\textcolor{blue}{\text{Replaced the \( Z \)}}.
+
+\textbf{Question: Does the instrumental variable \( z \) need to be uncorrelated with the dependent variable \( y \)?}
+
+\textbf{No!}
+
+\begin{itemize}
+    \item The instrumental variable \( z \) affects the dependent variable \( y \) through the endogenous variable \( x \):
+    \[
+    z \to x \to y
+    \]
+    \item The instrumental variable \( z \) does not directly affect the dependent variable \( y \):
+    \[
+    \text{cov}(z, y | x) = 0
+    \]
+    \item The instrumental variable \( z \) \textbf{can and must} influence the dependent variable \( y \) \textbf{only through} the endogenous variable \( x \).
+\end{itemize}
+
+Suppose that there is a set of instrumental variables \( Z = (Z_0 \quad Z_1 \quad \dots Z_K) \) 
+that meet the following condition:
+
+\begin{enumerate}
+    \item \( \text{plim} \ n^{-1}Z'X = Q_{ZX} \quad \text{(non-singular)} \)
+    \item \( \text{plim} \ n^{-1}Z'Z = Q_{ZZ} \quad \text{(positive definite)} \)
+    \item \( \text{plim} \ n^{-1}Z'u = 0 \)
+\end{enumerate}
+
+\[
+Y = X\beta + u \Rightarrow Z'Y = Z'X\beta + Z'u
+\]
+
+Let \( \tilde{\beta} \) be an estimator of \( \beta \). Then we have:
+
+\[
+Z'Y = Z'X\tilde{\beta} + Z'\tilde{u} \Rightarrow Z\tilde{U} =
+\]
+
+\[
+Z'(Y - X\tilde{\beta}) \Rightarrow \tilde{u} = Y - X\tilde{\beta}
+\]
+
+
+\[
+(Z'\tilde{u})(Z'\tilde{u}) = (Z'Y - Z'X\tilde{\beta})'(Z'Y - Z'X\tilde{\beta})
+\]
+
+\[
+= Y'Z'Z Y - 2\tilde{\beta}'X'Z'Z Y + \tilde{\beta}'X'Z'Z'X\tilde{\beta}
+\]
+
+\[
+\frac{\partial (Z'\tilde{u})(Z'\tilde{u})}{\partial \tilde{\beta}} = -2X'Z'Z Y + 2X'Z'Z'X\tilde{\beta} = 0
+\]
+
+hence \( X'Z'Z Y = X'Z'Z'X\tilde{\beta} \). Then premultiplying by \( (X'Z)^{-1} \) leads to
+
+\[
+\tilde{\beta}^{IV} = (Z'X)^{-1}Z'Y
+\]
+
+We further have:
+
+\[
+\tilde{\beta}^{IV} = (Z'X)^{-1}Z'(X\beta + u)
+\]
+
+\[
+= \beta + (Z'X)^{-1}Z'u
+\]
+
+\[
+\text{plim} \ \tilde{\beta}^{IV} = \beta + \left[ \text{plim} \left( \frac{Z'X}{n} \right) \right]^{-1} \cdot \text{plim} \frac{Z'u}{n}
+\]
+
+\[
+= \beta + Q_{ZX}^{-1} \cdot 0 = \beta
+\]
+
+Therefore \( \tilde{\beta}^{IV} \) is consistent.
+
+\subsection{Two-Stage Least Squares (2SLS)}
+\end{document}
+
+
