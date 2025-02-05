@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.1.27)  4 FEB 2025 21:55
+This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.1.27)  5 FEB 2025 09:02
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -202,7 +202,7 @@ File: l3backend-xetex.def 2024-01-04 L3 backend support: XeTeX
 \g__pdf_backend_annotation_int=\count280
 \g__pdf_backend_link_int=\count281
 )
-No file "casual inference".aux.
+(casual inference.aux)
 \openout1 = `"casual inference.aux"'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 25.
@@ -216,7 +216,7 @@ LaTeX Font Info:    ... okay on input line 25.
 LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 25.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 2
 5.
-(C:\Program Files\MiKTeX\tex/latex/base\ts1cmr.fd
+ (C:\Program Files\MiKTeX\tex/latex/base\ts1cmr.fd
 File: ts1cmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 LaTeX Font Info:    ... okay on input line 25.
@@ -281,10 +281,10 @@ LaTeX Font Info:    Trying to load font information for U+wasy on input line 27
 
 (C:\Program Files\MiKTeX\tex/latex/wasysym\uwasy.fd
 File: uwasy.fd 2020/01/19 v2.4 Wasy-2 symbol font definitions
-)
-No file "casual inference".toc.
+) (casual inference.toc)
 \tf@toc=\write3
 \openout3 = `"casual inference.toc"'.
+
 
 [1
 
@@ -295,11 +295,11 @@ L3 programming layer <2024-01-04>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 3176 strings out of 409617
- 44550 string characters out of 5778276
- 1918191 words of memory out of 5000000
- 25230 multiletter control sequences out of 15000+600000
- 563907 words of font info for 65 fonts, out of 8000000 for 9000
+ 3185 strings out of 409617
+ 44778 string characters out of 5778276
+ 1919191 words of memory out of 5000000
+ 25233 multiletter control sequences out of 15000+600000
+ 563915 words of font info for 66 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  57i,6n,65p,236b,228s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
