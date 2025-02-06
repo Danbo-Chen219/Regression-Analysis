@@ -1,171 +1,183 @@
 ########################################
-{
-    want <- c("tidyverse", "boot", "lmtest", "sandwich", "lmtest", "stargazer")
-    need <- want[!(want %in% installed.packages()[, "Package"])]
-    if (length(need)) install.packages(need, repos = "https://cloud.r-project.org/")
-    lapply(want, function(i) require(i, character.only = TRUE))
-    rm(need)
-}
+
 rm(list = ls())
+# Install fixest package
+library(fixest)
 library(tidyverse)
 library(boot)
 library(stargazer)
 library(sandwich)
 library(lmtest)
 library(boot)
-####################### ----Question 2------##########################
-data <- read.csv("housepricedata.csv")
-ols <- lm(lprice ~ llotsize + lsqrft + bdrms, data = data)
-# stargazer(ols, type = "text")
-boot_fn <- function(data, indices) {
-    d <- data[indices, ] # Resample data
-    coef(lm(lprice ~ llotsize + lsqrft + bdrms, data = d))
-}
-set.seed(123)
-boot_results <- boot(data, boot_fn, R = 1000)
-boot_se <- apply(boot_results$t, 2, sd)
-stargazer(ols, type = "text", title = "OLS Regression Results")
-results_table <- data.frame(
-    Coefficients = coef(ols),
-    `Bootstrapped SE` = boot_se,
-    `P-Value` = summary(ols)$coefficients[, 4]
-) %>%
-    mutate(`R-squared` = summary(ols)$r.squared)
-# Display results
-print(results_table)
-####################### ----Question 2.2------##########################
-ols2 <- lm(price ~ lotsize + sqrft + bdrms, data = data)
-stargazer(ols, type = "text", title = " Regression (2) Results")
-boot_fn2 <- function(data, indices) {
-    d2 <- data[indices, ] # Resample data
-    coef(lm(price ~ lotsize + sqrft + bdrms, data = d2))
-}
-set.seed(123)
-boot_results2 <- boot(data, boot_fn2, R = 1000)
-boot_se <- apply(boot_results2$t, 2, sd)
-results_table <- data.frame(
-    Coefficients = coef(ols2),
-    `Bootstrapped SE` = boot_se,
-    `P-Value` = summary(ols2)$coefficients[, 4]
-) %>%
-    mutate(`R-squared` = summary(ols2)$r.squared)
-print(results_table)
-# Display the prediction results
-new_data <- data.frame(
-    lotsize = 10000,
-    sqrft = 2300,
-    bdrms = 4
+library(wildrwolf)
+library(dplyr)
+library(tidyr)
+# Multiple Hypothesis Testing
+# Bonferroni and Holm
+setwd("D:/文档/GitHub/Regression-Analysis/Apl. Econometrics/homework/HW2")
+FILE <- getwd()
+lesotho <- read.csv(paste0(FILE, "/lesotho_cgp_data.csv"))
+####################### ----Question 1.1------##########################
+
+# df_baseline <- lesotho %>% filter(period == "Baseline")
+
+# Separate the treated and control groups
+baseline_control <- lesotho %>% filter(period == "Baseline" & cgp == 0)
+followup_control <- lesotho %>% filter(period == "Follow u" & cgp == 0) # only focus on control group
+cat("Baseline Control group rows:", nrow(baseline_control), "\n")
+cat("Follow-up Control group rows:", nrow(followup_control), "\n")
+# **Step 2: define baseline variables**
+baseline_vars <- c(
+    "foodexp", "nfoodexp", "healthexp", "eduexp", "children017",
+    "hheduc", "hhsize", "remit_amount", "cellphone", "hungry_adults",
+    "hungry_kids"
 )
-predicted_price <- predict(ols2, newdata = new_data)
-cat("The predicted price is:", round(predicted_price, 0), "thousand dollars\n")
-####################### ----Question 2.3------##########################
-predicted_with_ci <- predict(ols2, newdata = new_data, interval = "confidence", level = 0.95)
-cat("Predicted Price:", round(predicted_with_ci[1], 2), " thousand dollars\n")
-cat("95% Confidence Interval: [", round(predicted_with_ci[2], 2), ", ", round(predicted_with_ci[3], 2), "] thousand dollars\n")
-####################### ----Question 2.4------##########################
-# Model in Levels
-model_levels <- lm(price ~ lotsize + sqrft + bdrms, data = data)
-summary(model_levels)$adj.r.squared
-# Model in Logs
-model_logs <- lm(lprice ~ llotsize + lsqrft + bdrms, data = data)
-summary(model_logs)$adj.r.squared
-print("The model with the higher adjusted R-squared better explains the variation in price.")
-# Residual plot for Levels
-plot(model_levels$fitted.values, model_levels$residuals,
-    main = "Residuals (Levels Model)",
-    xlab = "Fitted Values", ylab = "Residuals"
+
+# **Step 3: initial t-test result table**
+t_test_results <- data.frame(
+    Variable = character(),
+    Mean_Baseline = numeric(),
+    Mean_Followup_Control = numeric(),
+    P_Value = numeric(),
+    Stability = character(), # 变量是否平稳
+    stringsAsFactors = FALSE
 )
-abline(h = 0, col = "red")
-# Residual plot for Logs
-plot(model_logs$fitted.values, model_logs$residuals,
-    main = "Residuals (Logs Model)",
-    xlab = "Fitted Values", ylab = "Residuals"
-)
-abline(h = 0, col = "red")
-print("Since the residuals from the logs model show more consistent variance and a better fit, the logs model is preferred")
-####################### ----Question 3------##########################
-rm(list = ls())
-library(tidyverse)
-library(boot)
-library(stargazer)
-library(sandwich)
-library(lmtest)
-library(boot)
-getwd()
-dirname(getwd())
-data <- read.csv("epadata.csv")
-# Split the data into participants (pstatus = 1) and non-participants (pstatus = 0)
-participants <- data %>% filter(pstatus == 1)
-non_participants <- data %>% filter(pstatus == 0)
-# Variables to analyze (replace with actual variable names from your dataset)
-variables <- c(colnames(data)[2:11])
-# Initialize a results table
-results_table <- data.frame(
-    Variable = variables,
-    Participant_Mean = numeric(length(variables)),
-    Non_Participant_Mean = numeric(length(variables)),
-    P_Value = numeric(length(variables))
-)
-# Loop through each variable, calculate means and p-values
-for (i in seq_along(variables)) {
-    var <- variables[i]
-    # Calculate means
-    participant_mean <- mean(participants[[var]], na.rm = TRUE)
-    non_participant_mean <- mean(non_participants[[var]], na.rm = TRUE)
-    # Perform t-test
-    t_test <- t.test(data[[var]] ~ data$pstatus)
-    # Store results
-    results_table$Participant_Mean[i] <- participant_mean
-    results_table$Non_Participant_Mean[i] <- non_participant_mean
-    results_table$P_Value[i] <- t_test$p.value
-}
-# Print the final results table
-stargazer(results_table, type = "text", title = "Comparison Table (Means and P-Values):", no.space = TRUE, single.row = TRUE, out = "3.1_Result.tex")
-# print("Comparison Table (Means and P-Values):")
-# print(results_table)
-# Draw conclusions
-cat("\nConclusions:\n")
-for (i in 1:nrow(results_table)) {
-    if (results_table$P_Value[i] < 0.05) {
-        cat(paste(
-            "Variable", results_table$Variable[i],
-            "shows a statistically significant difference (p < 0.05).\n"
+
+# **Step 4: t test**
+for (var in baseline_vars) {
+    if (sum(!is.na(baseline_control[[var]])) > 1 & sum(!is.na(followup_control[[var]])) > 1) {
+        t_test <- t.test(baseline_control[[var]], followup_control[[var]], var.equal = FALSE)
+
+        stability_flag <- ifelse(t_test$p.value < 0.05, "No (Significant Change)", "Yes (Stable)")
+
+        t_test_results <- rbind(t_test_results, data.frame(
+            Variable = var,
+            Mean_Baseline = mean(baseline_control[[var]], na.rm = TRUE),
+            Mean_Followup_Control = mean(followup_control[[var]], na.rm = TRUE),
+            P_Value = t_test$p.value,
+            Stability = stability_flag
         ))
     } else {
-        cat(paste(
-            "Variable", results_table$Variable[i],
-            "does not show a statistically significant difference (p >= 0.05).\n"
-        ))
+        cat("Skipping", var, "due to insufficient data\n")
     }
 }
-######################## Question 3.2########################
-# Create squared terms for Fac and Empl
-data$facsq <- data$fac^2
-data$emplsq <- data$empl^2
+
+
+print(t_test_results)
+
+####################### ----Question 1.2------##########################
+# Step 1: Filter Follow-up Data Only
+
+rm(list = ls())
+# Install fixest package
+library(fixest)
+library(tidyverse)
+library(boot)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+library(boot)
+library(wildrwolf)
+library(dplyr)
+library(tidyr)
+# Multiple Hypothesis Testing
+# Bonferroni and Holm
+setwd("D:/文档/GitHub/Regression-Analysis/Apl. Econometrics/homework/HW2")
+FILE <- getwd()
+lesotho <- read.csv(paste0(FILE, "/lesotho_cgp_data.csv"))
+followup_data <- lesotho %>% filter(period == "Follow u")
+cat("Number of rows in Follow-up data:", nrow(followup_data), "\n")
+# Step 2: Run OLS Regressions
+model_foodexp <- lm(foodexp ~ assign, data = followup_data)
+model_nfoodexp <- lm(nfoodexp ~ assign, data = followup_data)
+
+# Step 3: Display Regression Results
+stargazer(model_foodexp, model_nfoodexp, type = "text", title = "Wage Regression Results")
+
+
+####################### ----Question 1.3------##########################
+# **Step 2: Merge Baseline Covariates into Follow-up Data**
+baseline_data <- lesotho %>%
+    filter(period == "Baseline") %>%
+    select(unihhid, children017, hheduc, hhsize, remit_amount) # Baseline covariates
+
+# followup_data <- followup_data %>%
+#     left_join(baseline_data, by = "unihhid") # Merge based on unique household ID
+# Merge Baseline Covariates, renaming `.y` columns correctly
+followup_data <- followup_data %>%
+    left_join(
+        baseline_data %>% select(unihhid, children017, hheduc, hhsize, remit_amount),
+        by = "unihhid"
+    ) %>%
+    rename(
+        children017 = children017.y,
+        hheduc = hheduc.y,
+        hhsize = hhsize.y,
+        remit_amount = remit_amount.y
+    ) %>%
+    select(-children017.x, -hheduc.x, -hhsize.x, -remit_amount.x) # Remove duplicate `.x` columns
+
+# Check if the issue is resolved
+print(names(followup_data))
+
+# **Step 3: Handle Missing Data (Drop NAs)**
+followup_data <- followup_data %>% drop_na(foodexp, nfoodexp, children017, hheduc, hhsize, remit_amount)
+
+# **Step 4: Run OLS Regressions with Additional Controls**
+model_foodexp <- lm(foodexp ~ assign + children017 + hheduc + hhsize + remit_amount, data = followup_data)
+model_nfoodexp <- lm(nfoodexp ~ assign + children017 + hheduc + hhsize + remit_amount, data = followup_data)
+
+stargazer(model_foodexp, model_nfoodexp, type = "text", title = "Wage Regression Results")
+
+
+####################### ----Question 2.1------##########################
+
+
+####################### ----Question 3.1------##########################
+# install.packages("sensemakr", repos = "https://cloud.r-project.org/")
+
+library(tidyverse)
+library(boot)
+library(stargazer)
+library(sandwich)
+library(lmtest)
+library(boot)
+library(wildrwolf)
+library(dplyr)
+library(tidyr)
+library(sensemakr)
+
+setwd("D:/文档/GitHub/Regression-Analysis/Apl. Econometrics/homework/HW2")
+FILE <- getwd()
+epadata <- read.csv(paste0(FILE, "/epadata.csv"))
+
+# Create squared terms for Fac (facility size)
+epadata <- epadata %>%
+    mutate(facsq = fac^2, emplsq = empl^2)
+
 # Fit the OLS model
-ols3 <- lm(release ~ fac + facsq + herf + empl + emplsq + fg + strictbar +
-    educbar + lawbar + spendbar + pstatus, data = data)
-stargazer(ols3,
-    type = "text", title = "OLS Regression Results", no.space = TRUE,
-    single.row = TRUE,
-    out = "3.2_Result.tex"
+ols_model <- lm(release ~ fac + facsq + herf + empl + emplsq + fg + strictbar +
+    educbar + lawbar + spendbar + pstatus, data = epadata)
+
+# Conduct robustness check for pstatus using `fac` as benchmark
+sensitivity_analysis <- sensemakr(
+    model = ols_model,
+    treatment = "pstatus", # Variable of interest
+    benchmark_covariates = "fac", # Benchmark variable
+    kd = 1:3 # Strength of confounding from 1x to 3x the effect of `fac`
 )
-clustered_se <- vcovCL(ols3, cluster = ~pstatus)
-######################## Question 3.3########################
-# Generate a professionally styled table using stargazer
-stargazer(ols3,
-    type = "text", # Use "html" or "latex" for better-formatted output
-    se = list(sqrt(diag(clustered_se))), # Use clustered standard errors
-    title = "OLS Regression Results with Clustered Standard Errors",
-    align = TRUE,
-    covariate.labels = c(
-        "fac", "facsq", "herf", "empl", "emplsq",
-        "fg", "strictbar", "educbar", "lawbar",
-        "spendbar", "pstatus"
-    ),
-    dep.var.labels = c("Toxic Releases"),
-    no.space = TRUE,
-    single.row = TRUE,
-    out = "3.3_Result.tex"
+
+# Print sensitivity analysis summary
+summary(sensitivity_analysis)
+
+# Generate sensitivity plot
+plot(sensitivity_analysis)
+
+# Generate LaTeX-formatted regression table with sensitivity analysis
+stargazer(
+    ols_model,
+    type = "latex",
+    title = "OLS Regression with Sensitivity Analysis",
+    single.row = TRUE, no.space = TRUE,
+    out = "sensitivity_analysis.tex"
 )
-# cat(tab_out, sep = "\n", file = "results.tex")
