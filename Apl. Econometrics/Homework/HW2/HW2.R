@@ -174,10 +174,70 @@ summary(sensitivity_analysis)
 plot(sensitivity_analysis)
 
 # Generate LaTeX-formatted regression table with sensitivity analysis
-stargazer(
-    ols_model,
-    type = "latex",
-    title = "OLS Regression with Sensitivity Analysis",
-    single.row = TRUE, no.space = TRUE,
-    out = "sensitivity_analysis.tex"
+# stargazer(
+#     ols_model,
+#     type = "latex",
+#     title = "OLS Regression with Sensitivity Analysis",
+#     single.row = TRUE, no.space = TRUE,
+#     out = "sensitivity_analysis.tex"
+# )
+####################### ----Question 3.2------##########################
+
+# Step 1: Determine actual participation proportion
+actual_participation_rate <- mean(epadata$pstatus, na.rm = TRUE)
+num_firms <- nrow(epadata)
+num_treated <- round(actual_participation_rate * num_firms)
+
+
+# Step 2: Run 1,000 placebo regressions
+num_simulations <- 1000
+placebo_estimates <- numeric(num_simulations)
+
+set.seed(42) # Set seed for reproducibility
+
+
+for (i in 1:num_simulations) {
+    # Randomly assign firms to treatment while keeping the proportion constant
+    epadata$placebo_pstatus <- 0
+    epadata$placebo_pstatus[sample(1:num_firms, num_treated)] <- 1
+
+    # Run regression with placebo treatment
+    placebo_model <- lm(
+        release ~ fac + facsq + herf + empl + emplsq + fg +
+            strictbar + educbar + lawbar + spendbar + placebo_pstatus,
+        data = epadata
+    )
+
+    # Store coefficient for placebo_pstatus
+    placebo_estimates[i] <- coef(placebo_model)["placebo_pstatus"]
+}
+
+# Step 3: Run the actual regression for comparison
+actual_model <- lm(
+    release ~ fac + facsq + herf + empl + emplsq + fg +
+        strictbar + educbar + lawbar + spendbar + pstatus,
+    data = epadata
 )
+actual_coefficient <- coef(actual_model)["pstatus"]
+
+# Step 4: Plot the distribution of placebo estimates
+hist_data <- data.frame(placebo_estimates)
+
+ggplot(hist_data, aes(x = placebo_estimates)) +
+    geom_histogram(binwidth = 1, fill = "lightblue", color = "black", alpha = 0.7) +
+    geom_vline(xintercept = actual_coefficient, color = "red", linetype = "dashed", linewidth = 1.2) +
+    labs(
+        title = "Distribution of Placebo Estimates",
+        x = "Placebo Coefficient for pstatus",
+        y = "Frequency"
+    ) +
+    theme_minimal()
+save.image("HW2.png")
+
+# Step 5: Compute 95% Confidence Interval for Placebo Distribution
+ci_lower <- quantile(placebo_estimates, 0.025)
+ci_upper <- quantile(placebo_estimates, 0.975)
+
+# Step 6: Interpretation
+cat("\nActual Coefficient for pstatus:", actual_coefficient, "\n")
+cat("95% CI for Placebo Distribution:", ci_lower, "to", ci_upper, "\n")
