@@ -223,16 +223,17 @@ actual_coefficient <- coef(actual_model)["pstatus"]
 # Step 4: Plot the distribution of placebo estimates
 hist_data <- data.frame(placebo_estimates)
 
-ggplot(hist_data, aes(x = placebo_estimates)) +
-    geom_histogram(binwidth = 1, fill = "lightblue", color = "black", alpha = 0.7) +
+hist_plot <- ggplot(hist_data, aes(x = placebo_estimates)) +
+    geom_histogram(binwidth = 0.02, fill = "lightblue", color = "black", alpha = 0.7) +
     geom_vline(xintercept = actual_coefficient, color = "red", linetype = "dashed", linewidth = 1.2) +
     labs(
         title = "Distribution of Placebo Estimates",
         x = "Placebo Coefficient for pstatus",
         y = "Frequency"
     ) +
-    theme_minimal()
-save.image("HW2.png")
+    scale_x_continuous(limits = c(-0.2, 0.2)) + # Focus on the relevant range
+    theme_classic()
+ggsave("placebo_histogram.png", plot = hist_plot, width = 8, height = 6, dpi = 300)
 
 # Step 5: Compute 95% Confidence Interval for Placebo Distribution
 ci_lower <- quantile(placebo_estimates, 0.025)
