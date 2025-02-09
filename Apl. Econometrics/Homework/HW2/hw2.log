@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.1.27)  6 FEB 2025 12:32
+This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.1.27)  9 FEB 2025 10:16
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -697,19 +697,27 @@ LaTeX Font Info:    Trying to load font information for U+wasy on input line 29
 File: uwasy.fd 2020/01/19 v2.4 Wasy-2 symbol font definitions
 ) [1
 
-] [2] (hw2.aux)
+]
+File: Rplots.pdf Graphic file (type pdf)
+<use Rplots.pdf>
+
+Overfull \hbox (2.60677pt too wide) in paragraph at lines 66--100
+[]  
+ []
+
+[2] [3] (hw2.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 23852 strings out of 409617
- 606476 string characters out of 5778276
+ 23861 strings out of 409617
+ 606630 string characters out of 5778276
  1926191 words of memory out of 5000000
- 45555 multiletter control sequences out of 15000+600000
+ 45563 multiletter control sequences out of 15000+600000
  567684 words of font info for 85 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 84i,10n,93p,737b,479s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,11n,93p,737b,479s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on hw2.pdf (2 pages).
+Output written on hw2.pdf (3 pages).

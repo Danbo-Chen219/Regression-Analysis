@@ -168,8 +168,14 @@ sensitivity_analysis <- sensemakr(
 )
 
 # Print sensitivity analysis summary
-summary(sensitivity_analysis)
-
+sensitivity <- summary(sensitivity_analysis)
+stargazer(
+    sensitivity,
+    type = "latex",
+    title = "OLS Regression with Sensitivity Analysis Results",
+    single.row = TRUE, no.space = TRUE,
+    out = "sensitivity_analysis_result.tex"
+)
 # Generate sensitivity plot
 plot(sensitivity_analysis)
 
@@ -242,3 +248,7 @@ ci_upper <- quantile(placebo_estimates, 0.975)
 # Step 6: Interpretation
 cat("\nActual Coefficient for pstatus:", actual_coefficient, "\n")
 cat("95% CI for Placebo Distribution:", ci_lower, "to", ci_upper, "\n")
+stargazer(actual_model,
+    type = "text", title = "OLS Regression Results with Placebo Test",
+    out = "placebo_test_result.tex"
+)
