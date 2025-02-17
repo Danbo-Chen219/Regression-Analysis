@@ -1,10 +1,10 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.1.27)  17 FEB 2025 14:11
+This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.1.27)  17 FEB 2025 14:14
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**./HW2.tex
-(HW2.tex
+**./hw3.tex
+(hw3.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
 (C:\Program Files\MiKTeX\tex/latex/base\article.cls
@@ -610,8 +610,8 @@ File: l3backend-xetex.def 2024-01-04 L3 backend support: XeTeX
 \g__pdf_backend_object_int=\count308
 \g__pdf_backend_annotation_int=\count309
 \g__pdf_backend_link_int=\count310
-) (HW2.aux)
-\openout1 = `HW2.aux'.
+) (hw3.aux)
+\openout1 = `hw3.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
 LaTeX Font Info:    ... okay on input line 27.
@@ -699,7 +699,7 @@ File: uwasy.fd 2020/01/19 v2.4 Wasy-2 symbol font definitions
 
 LaTeX Warning: File `Figure/P1.A.jpg' not found on input line 37.
 
-HW2.tex:37: Unable to load picture or PDF file 'Figure/P1.A.jpg'.
+hw3.tex:37: Unable to load picture or PDF file 'Figure/P1.A.jpg'.
 <to be read again> 
                    }
 l.37 ...hics[width=0.8\textwidth]{Figure/P1.A.jpg}
@@ -708,7 +708,7 @@ The requested image couldn't be read because
 it was not a recognized image format.
 
 
-HW2.tex:37: Package graphics Error: Division by 0.
+hw3.tex:37: Package graphics Error: Division by 0.
 
 See the graphics package documentation for explanation.
 Type  H <return>  for immediate help.
@@ -725,7 +725,7 @@ File: Figure/P1.A.jpg Graphic file (type bmp)
 
 LaTeX Warning: File `Figure/P1.B.jpg' not found on input line 39.
 
-HW2.tex:39: Unable to load picture or PDF file 'Figure/P1.B.jpg'.
+hw3.tex:39: Unable to load picture or PDF file 'Figure/P1.B.jpg'.
 <to be read again> 
                    }
 l.39 ...hics[width=0.8\textwidth]{Figure/P1.B.jpg}
@@ -734,7 +734,7 @@ The requested image couldn't be read because
 it was not a recognized image format.
 
 
-HW2.tex:39: Package graphics Error: Division by 0.
+hw3.tex:39: Package graphics Error: Division by 0.
 
 See the graphics package documentation for explanation.
 Type  H <return>  for immediate help.
@@ -751,7 +751,7 @@ File: Figure/P1.B.jpg Graphic file (type bmp)
 
 LaTeX Warning: File `Figure/P1.C.jpg' not found on input line 41.
 
-HW2.tex:41: Unable to load picture or PDF file 'Figure/P1.C.jpg'.
+hw3.tex:41: Unable to load picture or PDF file 'Figure/P1.C.jpg'.
 <to be read again> 
                    }
 l.41 ...hics[width=0.8\textwidth]{Figure/P1.C.jpg}
@@ -760,7 +760,7 @@ The requested image couldn't be read because
 it was not a recognized image format.
 
 
-HW2.tex:41: Package graphics Error: Division by 0.
+hw3.tex:41: Package graphics Error: Division by 0.
 
 See the graphics package documentation for explanation.
 Type  H <return>  for immediate help.
@@ -774,398 +774,22 @@ or  <return>  to continue without it.
 
 File: Figure/P1.C.jpg Graphic file (type bmp)
 <Figure/P1.C.jpg>
-
-LaTeX Warning: File `Figure/P1.D.jpg' not found on input line 50.
-
-HW2.tex:50: Unable to load picture or PDF file 'Figure/P1.D.jpg'.
-<to be read again> 
-                   }
-l.50 ...hics[width=0.8\textwidth]{Figure/P1.D.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:50: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.50 ...hics[width=0.8\textwidth]{Figure/P1.D.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P1.D.jpg Graphic file (type bmp)
-<Figure/P1.D.jpg>
-
-LaTeX Warning: File `Figure/P1.E.jpg' not found on input line 52.
-
-HW2.tex:52: Unable to load picture or PDF file 'Figure/P1.E.jpg'.
-<to be read again> 
-                   }
-l.52 ...hics[width=0.8\textwidth]{Figure/P1.E.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:52: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.52 ...hics[width=0.8\textwidth]{Figure/P1.E.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P1.E.jpg Graphic file (type bmp)
-<Figure/P1.E.jpg>
-
-LaTeX Warning: File `Figure/P1.F.jpg' not found on input line 54.
-
-HW2.tex:54: Unable to load picture or PDF file 'Figure/P1.F.jpg'.
-<to be read again> 
-                   }
-l.54 ...hics[width=0.8\textwidth]{Figure/P1.F.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:54: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.54 ...hics[width=0.8\textwidth]{Figure/P1.F.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P1.F.jpg Graphic file (type bmp)
-<Figure/P1.F.jpg>
 [1
 
-]
-
-LaTeX Warning: File `Figure/P2.1.jpg' not found on input line 149.
-
-HW2.tex:149: Unable to load picture or PDF file 'Figure/P2.1.jpg'.
-<to be read again> 
-                   }
-l.149 ...ics[width=0.8\textwidth]{Figure/P2.1.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:149: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.149 ...ics[width=0.8\textwidth]{Figure/P2.1.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P2.1.jpg Graphic file (type bmp)
-<Figure/P2.1.jpg>
-
-LaTeX Warning: File `Figure/P2.2.jpg' not found on input line 151.
-
-HW2.tex:151: Unable to load picture or PDF file 'Figure/P2.2.jpg'.
-<to be read again> 
-                   }
-l.151 ...ics[width=0.8\textwidth]{Figure/P2.2.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:151: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.151 ...ics[width=0.8\textwidth]{Figure/P2.2.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P2.2.jpg Graphic file (type bmp)
-<Figure/P2.2.jpg>
-
-LaTeX Warning: File `Figure/P3.1.jpg' not found on input line 159.
-
-HW2.tex:159: Unable to load picture or PDF file 'Figure/P3.1.jpg'.
-<to be read again> 
-                   }
-l.159 ...ics[width=0.8\textwidth]{Figure/P3.1.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:159: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.159 ...ics[width=0.8\textwidth]{Figure/P3.1.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P3.1.jpg Graphic file (type bmp)
-<Figure/P3.1.jpg>
-
-LaTeX Warning: File `Figure/P3.2.jpg' not found on input line 161.
-
-HW2.tex:161: Unable to load picture or PDF file 'Figure/P3.2.jpg'.
-<to be read again> 
-                   }
-l.161 ...ics[width=0.8\textwidth]{Figure/P3.2.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:161: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.161 ...ics[width=0.8\textwidth]{Figure/P3.2.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P3.2.jpg Graphic file (type bmp)
-<Figure/P3.2.jpg>
-[2]
-
-LaTeX Warning: File `Figure/P3.3.jpg' not found on input line 163.
-
-HW2.tex:163: Unable to load picture or PDF file 'Figure/P3.3.jpg'.
-<to be read again> 
-                   }
-l.163 ...ics[width=0.8\textwidth]{Figure/P3.3.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:163: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.163 ...ics[width=0.8\textwidth]{Figure/P3.3.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P3.3.jpg Graphic file (type bmp)
-<Figure/P3.3.jpg>
-
-LaTeX Warning: File `Figure/P3.4.jpg' not found on input line 165.
-
-HW2.tex:165: Unable to load picture or PDF file 'Figure/P3.4.jpg'.
-<to be read again> 
-                   }
-l.165 ...ics[width=0.8\textwidth]{Figure/P3.4.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:165: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.165 ...ics[width=0.8\textwidth]{Figure/P3.4.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P3.4.jpg Graphic file (type bmp)
-<Figure/P3.4.jpg>
-
-LaTeX Warning: File `Figure/P3.5.jpg' not found on input line 173.
-
-HW2.tex:173: Unable to load picture or PDF file 'Figure/P3.5.jpg'.
-<to be read again> 
-                   }
-l.173 ...ics[width=0.8\textwidth]{Figure/P3.5.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:173: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.173 ...ics[width=0.8\textwidth]{Figure/P3.5.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P3.5.jpg Graphic file (type bmp)
-<Figure/P3.5.jpg>
-
-LaTeX Warning: File `Figure/P3.6.jpg' not found on input line 175.
-
-HW2.tex:175: Unable to load picture or PDF file 'Figure/P3.6.jpg'.
-<to be read again> 
-                   }
-l.175 ...ics[width=0.8\textwidth]{Figure/P3.6.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:175: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.175 ...ics[width=0.8\textwidth]{Figure/P3.6.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P3.6.jpg Graphic file (type bmp)
-<Figure/P3.6.jpg>
-
-LaTeX Warning: File `Figure/P3.7.jpg' not found on input line 182.
-
-HW2.tex:182: Unable to load picture or PDF file 'Figure/P3.7.jpg'.
-<to be read again> 
-                   }
-l.182 ...ics[width=0.8\textwidth]{Figure/P3.7.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:182: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.182 ...ics[width=0.8\textwidth]{Figure/P3.7.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P3.7.jpg Graphic file (type bmp)
-<Figure/P3.7.jpg>
-
-LaTeX Warning: File `Figure/P3.8.jpg' not found on input line 184.
-
-HW2.tex:184: Unable to load picture or PDF file 'Figure/P3.8.jpg'.
-<to be read again> 
-                   }
-l.184 ...ics[width=0.8\textwidth]{Figure/P3.8.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:184: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.184 ...ics[width=0.8\textwidth]{Figure/P3.8.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P3.8.jpg Graphic file (type bmp)
-<Figure/P3.8.jpg>
-
-LaTeX Warning: File `Figure/P4.jpg' not found on input line 193.
-
-HW2.tex:193: Unable to load picture or PDF file 'Figure/P4.jpg'.
-<to be read again> 
-                   }
-l.193 ...phics[width=0.8\textwidth]{Figure/P4.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:193: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.193 ...phics[width=0.8\textwidth]{Figure/P4.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P4.jpg Graphic file (type bmp)
-<Figure/P4.jpg>
-
-LaTeX Warning: File `Figure/P5.jpg' not found on input line 201.
-
-HW2.tex:201: Unable to load picture or PDF file 'Figure/P5.jpg'.
-<to be read again> 
-                   }
-l.201 ...phics[width=0.8\textwidth]{Figure/P5.jpg}
-                                                  
-The requested image couldn't be read because
-it was not a recognized image format.
-
-
-HW2.tex:201: Package graphics Error: Division by 0.
-
-See the graphics package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.201 ...phics[width=0.8\textwidth]{Figure/P5.jpg}
-                                                  
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Figure/P5.jpg Graphic file (type bmp)
-<Figure/P5.jpg>
-[3
+] [2] (hw3.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-04>
+ ***********
+ ) 
+Here is how much of TeX's memory you used:
+ 24010 strings out of 409617
+ 610257 string characters out of 5778276
+ 1926191 words of memory out of 5000000
+ 45707 multiletter control sequences out of 15000+600000
+ 567684 words of font info for 85 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 84i,7n,93p,737b,479s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+Error 1 (driver return code) generating output;
+file hw3.pdf may not be valid.
