@@ -8,7 +8,7 @@ library(readr)
 library(stargazer)
 library(tidyr)
 
-setwd("D:/文档/GitHub/Regression-Analysis/Apl. Econometrics/homework/Final")
+setwd("D:/Regression-Analysis/Apl. Econometrics/homework/Final")
 FILE <- getwd()
 # Read the dataset
 data <- read.csv("finalsp25dataset.csv")
