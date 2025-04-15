@@ -1582,6 +1582,78 @@ This transformation removes \( \alpha_i \), and OLS on the transformed variables
 
 Both approaches yield consistent estimates of \( \beta \) under the fixed effects assumption.
 
+\section*{1. Model Setup}
+
+The fixed effects model with individual-specific effects is:
+
+\[
+y_{it} = X_{it}' \beta + \alpha_i + \nu_{it}
+\]
+
+We can write this in matrix form using dummy variables \( D \in \mathbb{R}^{nT \times n} \), where each column of \( D \) corresponds to one individual:
+
+\[
+Y = X \beta + D \alpha + \nu
+\]
+
+Here:
+\begin{itemize}
+  \item \( Y \in \mathbb{R}^{nT \times 1} \): stacked vector of outcomes
+  \item \( X \in \mathbb{R}^{nT \times k} \): stacked covariates
+  \item \( D \in \mathbb{R}^{nT \times n} \): individual dummy matrix (one column per individual)
+  \item \( \alpha \in \mathbb{R}^{n \times 1} \): individual effects
+  \item \( \nu \in \mathbb{R}^{nT \times 1} \): error term
+\end{itemize}
+
+\section*{2. OLS with Dummy Variables (LSDV)}
+
+We can estimate \( \beta \) and \( \alpha \) using OLS on:
+
+\[
+Y = X \beta + D \alpha + \nu
+\]
+
+However, when \( n \) is large, this becomes computationally inefficient due to the large number of dummies.
+
+\section*{3. Within Transformation (Projection)}
+
+To eliminate \( \alpha \), we use the projection matrix:
+
+\[
+M = I - D(D'D)^{-1}D'
+\]
+
+This matrix projects any vector onto the orthogonal complement of the column space of \( D \), i.e., it removes the individual-specific means.
+
+Multiply both sides of the model by \( M \):
+
+\[
+MY = MX \beta + MD \alpha + M \nu
+\]
+
+Since \( MD = 0 \), we get:
+
+\[
+MY = MX \beta + M \nu
+\]
+
+Thus, the **within estimator** is:
+
+\[
+\hat{\beta}_{FE} = (X'MX)^{-1}X'MY
+\]
+
+This estimator is numerically equivalent to the LSDV estimator for \( \beta \).
+
+\section*{4. Summary}
+
+\begin{itemize}
+  \item LSDV: Estimate \( \beta \) and \( \alpha \) using dummy variables.
+  \item Within Estimator: Use matrix \( M \) to remove \( \alpha \) and estimate \( \beta \) directly.
+  \item Both methods give the same estimate for \( \beta \), but the within estimator is computationally efficient for large \( n \).
+\end{itemize}
+
+
 \end{document}
 
 
