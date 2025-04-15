@@ -1367,6 +1367,221 @@ Then follow similar logic as in homoskedasticity and show that:
 \hat{\Omega}_{k\ell} \xrightarrow{p} E[z_{ik} z_{i\ell} x_i \varepsilon_i] < \infty.
 \]
 \end{enumerate}
+
+\section{Pandel Data \& Model}
+
+\section*{1. Panel Data System}
+
+For \( m \) individual units observed over \( T \) time periods, consider the system:
+
+\[
+Y_i = X_i \beta_i + \varepsilon_i, \quad i = 1, \dots, m
+\]
+
+We can stack the system as:
+
+\[
+Y = 
+\begin{bmatrix}
+Y_1 \\
+Y_2 \\
+\vdots \\
+Y_m
+\end{bmatrix}, \quad
+X = 
+\begin{bmatrix}
+X_1 & 0 & \cdots & 0 \\
+0 & X_2 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & X_m
+\end{bmatrix}, \quad
+\beta = 
+\begin{bmatrix}
+\beta_1 \\
+\beta_2 \\
+\vdots \\
+\beta_m
+\end{bmatrix}, \quad
+\varepsilon = 
+\begin{bmatrix}
+\varepsilon_1 \\
+\varepsilon_2 \\
+\vdots \\
+\varepsilon_m
+\end{bmatrix}
+\]
+
+Assuming:
+
+\[
+E[\varepsilon \varepsilon' | X] = \Omega
+\]
+
+If the errors are uncorrelated across time but possibly correlated across units, then:
+
+\[
+\Omega = \Sigma \otimes I_T
+\]
+
+Where \( \Sigma \in \mathbb{R}^{m \times m} \) captures contemporaneous correlation across units, and \( I_T \) is a \( T \times T \) identity matrix.
+
+\subsection*{GLS Estimator}
+
+\[
+\hat{\beta}_{\text{GLS}} = (X' \Omega^{-1} X)^{-1} X' \Omega^{-1} Y
+\]
+
+If \( \Omega = \Sigma \otimes I \), then:
+
+\[
+\hat{\beta}_{\text{GLS}} = \left( X' (\Sigma^{-1} \otimes I) X \right)^{-1} X' (\Sigma^{-1} \otimes I) Y
+\]
+
+This is useful in the context of Seemingly Unrelated Regressions (SUR).
+
+\section*{2. Panel Data with Unobserved Heterogeneity}
+
+A more general model includes observed and unobserved heterogeneity:
+
+\[
+y_{it} = X_{it} \beta + Z_i' \theta + C_i + \nu_{it}
+\]
+
+Where:
+\begin{itemize}
+  \item \( X_{it} \): time-varying regressors
+  \item \( Z_i \): time-invariant observed regressors
+  \item \( C_i \): unobserved individual effect
+  \item \( \nu_{it} \): idiosyncratic error
+\end{itemize}
+
+Let \( V_{it} = C_i + \nu_{it} \), then:
+
+\[
+y_{it} = X_{it} \beta + Z_i' \theta + V_{it}
+\]
+
+\subsection*{2.1 Random Effects Model}
+
+Assume:
+
+\[
+C_i \perp X_{it},\ Z_i
+\]
+
+Then, define:
+
+\[
+Z_i' \theta + C_i = \alpha_i, \quad E[C_i | X_{it}] = 0
+\]
+
+So the model becomes:
+
+\[
+y_{it} = X_{it} \beta + \alpha + u_i + \nu_{it}
+\]
+
+Estimation: feasible GLS or MLE.
+
+\subsection*{2.2 Fixed Effects Model}
+
+Assume:
+
+\[
+C_i \text{ is correlated with } X_{it},\ Z_i
+\]
+
+Then \( C_i \) cannot be treated as part of the error. Instead, eliminate \( C_i \) using the within transformation (demeaning over time) or using dummy variables:
+
+\[
+y_{it} = X_{it} \beta + Z_i' \theta + C_i + \nu_{it}
+\Rightarrow
+y_{it} = X_{it} \beta + \alpha_i + \nu_{it}
+\]
+
+Estimation: fixed effects (within estimator or LSDV method).
+
+\subsection*{Summary}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+ & Random Effects & Fixed Effects \\
+\hline
+Assumption & \( C_i \perp X_{it}, Z_i \) & \( C_i \text{ correlated with } X_{it}, Z_i \) \\
+\hline
+Estimator & GLS / MLE & Within Estimator / Dummy Variables \\
+\hline
+Efficiency & More efficient if assumption holds & Robust to correlation \\
+\hline
+Consistency & Only if uncorrelated & Always consistent \\
+\hline
+\end{tabular}
+\end{center}
+\section*{Model Setup}
+
+Consider the fixed effects panel data model:
+
+\[
+y_{it} = X_{it} \beta + \alpha_i + \nu_{it}
+\]
+
+where:
+\begin{itemize}
+  \item \( y_{it} \): dependent variable
+  \item \( X_{it} \): time-varying regressors
+  \item \( \alpha_i \): unobserved time-invariant individual-specific effect
+  \item \( \nu_{it} \): idiosyncratic error
+\end{itemize}
+
+To consistently estimate \( \beta \), we must eliminate \( \alpha_i \), which may be correlated with \( X_{it} \).
+
+\section*{1. Dummy Variables (LSDV Method)}
+
+Introduce a set of \( N-1 \) individual-specific dummy variables:
+
+\[
+y_{it} = X_{it} \beta + \sum_{j=1}^{N-1} d_j \delta_j + \nu_{it}
+\]
+
+where:
+\begin{itemize}
+  \item \( d_j = 1 \) if the observation belongs to individual \( j \), 0 otherwise.
+  \item \( \delta_j \) captures the effect \( \alpha_j \).
+\end{itemize}
+
+This formulation allows us to estimate \( \beta \) while absorbing the \( \alpha_i \) via dummies.
+
+\section*{2. Within Transformation (Time-Demeaning)}
+
+Take the average over time for each individual \( i \):
+
+\[
+\bar{y}_i = \frac{1}{T} \sum_{t=1}^T y_{it}, \quad
+\bar{X}_i = \frac{1}{T} \sum_{t=1}^T X_{it}
+\]
+
+Subtract individual means from each observation:
+
+\[
+y_{it} - \bar{y}_i = (X_{it} - \bar{X}_i) \beta + (\alpha_i - \alpha_i) + (\nu_{it} - \bar{\nu}_i)
+\]
+
+\[
+\Rightarrow \tilde{y}_{it} = \tilde{X}_{it} \beta + \tilde{\nu}_{it}
+\]
+
+This transformation removes \( \alpha_i \), and OLS on the transformed variables yields the fixed effects estimator.
+
+\section*{Summary}
+
+\begin{itemize}
+  \item \textbf{Dummy variables} absorb \( \alpha_i \) by explicitly including it in the regression.
+  \item \textbf{Within transformation} eliminates \( \alpha_i \) by demeaning, leading to the ``within'' estimator.
+\end{itemize}
+
+Both approaches yield consistent estimates of \( \beta \) under the fixed effects assumption.
+
 \end{document}
 
 
