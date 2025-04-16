@@ -11,6 +11,7 @@
 \usetikzlibrary{trees, positioning}
 \usepackage{pgfplots}
 \usepackage{xcolor}
+\usepackage{bm}
 \renewcommand{\baselinestretch}{1.0}
 
 \DeclareMathOperator*{\plim}{plim}
@@ -1651,6 +1652,1453 @@ This estimator is numerically equivalent to the LSDV estimator for \( \beta \).
   \item LSDV: Estimate \( \beta \) and \( \alpha \) using dummy variables.
   \item Within Estimator: Use matrix \( M \) to remove \( \alpha \) and estimate \( \beta \) directly.
   \item Both methods give the same estimate for \( \beta \), but the within estimator is computationally efficient for large \( n \).
+\end{itemize}
+
+\section*{1. What is the Matrix \( M \)?}
+
+In fixed effects models, we want to eliminate unobserved individual-specific effects \( \alpha_i \). To do this, we use the matrix:
+
+\[
+M = I - D(D'D)^{-1}D'
+\]
+
+This is a \textbf{projection matrix}:
+\begin{itemize}
+    \item \( D \) is the dummy variable matrix for individuals.
+    \item \( D(D'D)^{-1}D' \) is the projection onto the column space of \( D \), i.e., the space spanned by individual means.
+    \item \( M \) projects onto the \textit{orthogonal complement} of that space, removing variation due to individual means.
+\end{itemize}
+
+\section*{2. Why Does \( M \) Remove Individual Means?}
+
+Suppose we have panel data with \( n \) individuals and \( T \) time periods per individual. Each variable \( y \in \mathbb{R}^{nT} \) is stacked as:
+
+\[
+y = \begin{bmatrix}
+y_{11} \\
+y_{12} \\
+\vdots \\
+y_{1T} \\
+y_{21} \\
+\vdots \\
+y_{nT}
+\end{bmatrix}
+\]
+
+Let \( D \in \mathbb{R}^{nT \times n} \) be the dummy matrix for individuals. Then:
+
+\[
+D'D = T \cdot I_n, \quad (D'D)^{-1} = \frac{1}{T} I_n
+\]
+
+\[
+D(D'D)^{-1}D' = \frac{1}{T} DD'
+\]
+
+This means for any vector \( y \), we have:
+
+\[
+P = D(D'D)^{-1}D', \quad Py = \text{individual mean vector}
+\]
+
+So:
+
+\[
+My = (I - P)y = y - \bar{y}_i
+\]
+
+where each block of \( T \) observations is demeaned within individual \( i \). Hence, \( M \) performs the \textbf{within transformation}.
+
+\section*{3. Numerical Example (2 Individuals, 2 Time Periods)}
+
+Let:
+
+\[
+y = \begin{bmatrix}
+y_{11} \\
+y_{12} \\
+y_{21} \\
+y_{22}
+\end{bmatrix}, \quad
+D = \begin{bmatrix}
+1 & 0 \\
+1 & 0 \\
+0 & 1 \\
+0 & 1
+\end{bmatrix}
+\]
+
+Then:
+
+\[
+D'D = \begin{bmatrix}
+2 & 0 \\
+0 & 2
+\end{bmatrix}, \quad
+(D'D)^{-1} = \frac{1}{2} I
+\]
+
+\[
+P = D(D'D)^{-1}D' = \frac{1}{2} \begin{bmatrix}
+1 & 1 & 0 & 0 \\
+1 & 1 & 0 & 0 \\
+0 & 0 & 1 & 1 \\
+0 & 0 & 1 & 1
+\end{bmatrix}
+\]
+
+\[
+Py = \begin{bmatrix}
+\bar{y}_1 \\
+\bar{y}_1 \\
+\bar{y}_2 \\
+\bar{y}_2
+\end{bmatrix}, \quad
+My = y - Py = \begin{bmatrix}
+y_{11} - \bar{y}_1 \\
+y_{12} - \bar{y}_1 \\
+y_{21} - \bar{y}_2 \\
+y_{22} - \bar{y}_2
+\end{bmatrix}
+\]
+
+This is the vector of \textbf{demeaned values}.
+
+\section*{4. Why Use This in Estimation?}
+
+In the fixed effects model:
+
+\[
+Y = X \beta + D \alpha + \nu
+\]
+
+Multiplying both sides by \( M \):
+
+\[
+MY = MX \beta + MD \alpha + M \nu
+\]
+
+Since \( MD = 0 \), the individual effects \( \alpha \) drop out:
+
+\[
+MY = MX \beta + M \nu
+\]
+
+So we can estimate \( \beta \) using OLS on the \textbf{demeaned model}:
+
+\[
+\hat{\beta}_{FE} = (X'MX)^{-1}X'MY
+\]
+
+\section*{5. Summary}
+
+\begin{itemize}
+    \item \( D(D'D)^{-1}D' \) projects a variable onto the space of individual means.
+    \item \( M = I - D(D'D)^{-1}D' \) subtracts those means — it de-means each individual's observations.
+    \item This transformation is the core of the \textbf{fixed effects (within)} estimator.
+\end{itemize}
+
+\section*{Model Recap}
+
+The estimated pooled regression model is:
+
+\[
+\ln(\text{WAGE}_{it}) = \beta_0 + \delta_0 Y85_{it} + \beta_1 \text{EDUC}_{it} + \delta_1 (Y85_{it} \cdot \text{EDUC}_{it}) + \cdots + \varepsilon_{it}
+\]
+
+We focus on two main effects:
+\begin{itemize}
+  \item Return to education over time
+  \item Gender wage gap over time
+\end{itemize}
+
+\section*{1. Returns to Education (EDUC)}
+
+\subsection*{From Output (Pooled Regression):}
+\begin{itemize}
+  \item Coefficient on \texttt{educ}: \( \beta_1 = 0.0747209 \)
+  \item Coefficient on \texttt{y85Educ}: \( \delta_1 = 0.0184605 \)
+\end{itemize}
+
+\subsection*{Interpretation}
+\begin{itemize}
+  \item \textbf{1978:} Return to education is simply \( \hat{\beta}_1 = 0.0747 \), or a 7.47\% increase in wages per additional year of education.
+  \item \textbf{1985:} Return includes the interaction:
+  \[
+  \hat{\beta}_1 + \hat{\delta}_1 = 0.0747 + 0.0185 = 0.0932 \Rightarrow 9.32\% \text{ increase}
+  \]
+\end{itemize}
+
+\subsection*{Statistical Significance}
+\begin{itemize}
+  \item The p-value for \texttt{y85Educ} is 0.049, which is marginally below 0.05.
+  \item Thus, the increase is \textbf{statistically significant at the 5\% level}.
+\end{itemize}
+
+\noindent\textbf{Conclusion:}  
+\begin{itemize}
+  \item In 1978, the return to education was ~7.5\%.
+  \item In 1985, it increased by 1.85 percentage points to ~9.3\%.
+  \item The difference is marginally statistically significant.
+\end{itemize}
+
+\section*{2. Gender Wage Gap (FEMALE)}
+
+\subsection*{From Output (Pooled Regression):}
+\begin{itemize}
+  \item Coefficient on \texttt{female}: \( \beta_5 = -0.3167 \)
+  \item Coefficient on \texttt{y85fem}: \( \delta_5 = 0.0859 \)
+\end{itemize}
+
+\subsection*{Interpretation}
+\begin{itemize}
+  \item \textbf{1978:} Women earned \( \exp(-0.3167) - 1 \approx -31.67\% \) less than men.
+  \item \textbf{1985:} Gap reduced to \( -0.3167 + 0.0859 = -0.2308 \Rightarrow \exp(-0.2308) - 1 \approx -23.08\% \)
+  \item Difference = 8.6 percentage points
+  \item But: \( p = 0.117 \Rightarrow \) \textbf{not statistically significant}.
+\end{itemize}
+
+\noindent\textbf{Conclusion:}  
+\begin{itemize}
+  \item In 1978, women earned ~31.7\% less than men.
+  \item In 1985, the gap closed to ~23.1\%.
+  \item The change is not statistically significant, so we cannot conclude the gap truly changed.
+\end{itemize}
+
+\section*{3. Mathematical Summary}
+
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Term} & \textbf{Coefficient} \\
+\midrule
+\texttt{educ}      & 0.0747 (EDU effect in 1978) \\
+\texttt{y85Educ}   & 0.0185 (Extra EDU return in 1985) \\
+\texttt{female}    & -0.3167 (Wage penalty for women in 1978) \\
+\texttt{y85fem}    & 0.0859 (Reduction in penalty in 1985) \\
+\bottomrule
+\end{tabular}
+
+\section*{4. Summary Table}
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Year} & \textbf{Return to EDU} & \textbf{Gender Gap} & \textbf{Significance EDU} & \textbf{Significance Gender} \\
+\hline
+1978 & \( \beta_1 = 0.0747 \) & \( \beta_5 = -0.3167 \) & --- & --- \\
+1985 & \( \beta_1 + \delta_1 = 0.0932 \) & \( \beta_5 + \delta_5 = -0.2308 \) & Yes (5\%) & No (p = 0.117) \\
+\hline
+\end{tabular}
+\end{center}
+
+\section*{Why Interpret Dummy and Continuous Variables Differently in Log-Wage Models?}
+
+In models where the dependent variable is in logarithmic form (e.g., \( \ln(\text{WAGE}) \)), the interpretation of regression coefficients depends on whether the independent variable is continuous or binary.
+
+\subsection*{1. Continuous Variables (e.g., \texttt{EDUC}, \texttt{EXPER})}
+
+For a continuous variable \( X \), the model takes the form:
+
+\[
+\ln(\text{WAGE}) = \beta_0 + \beta_1 X + \varepsilon
+\]
+
+Then:
+\[
+\frac{d \ln(\text{WAGE})}{dX} = \beta_1 \quad \Rightarrow \quad \text{WAGE changes by approximately } 100 \cdot \beta_1\%
+\]
+
+\textbf{Interpretation:} Each one-unit increase in \( X \) is associated with an approximate \( \beta_1 \cdot 100\% \) change in wages.
+
+\textit{Example:} If \( \beta_1 = 0.076 \), then each additional year of education increases wages by approximately 7.6\%.
+
+\subsection*{2. Dummy Variables (e.g., \texttt{FEMALE}, \texttt{UNION})}
+
+For a binary variable \( D \in \{0,1\} \), the model is:
+
+\[
+\ln(\text{WAGE}) = \beta_0 + \beta_1 D + \varepsilon
+\]
+
+Then:
+\[
+\text{WAGE}_1 = \exp(\beta_0 + \beta_1), \quad \text{WAGE}_0 = \exp(\beta_0)
+\]
+\[
+\Rightarrow \frac{\text{WAGE}_1}{\text{WAGE}_0} = \exp(\beta_1)
+\quad \Rightarrow \quad \% \text{ difference} = \exp(\beta_1) - 1
+\]
+
+\textbf{Interpretation:} Changing from 0 to 1 in the dummy variable is associated with a \( (\exp(\beta_1) - 1) \cdot 100\% \) difference in wages.
+
+\textit{Example:} If \( \beta_1 = -0.230 \), then:
+
+\[
+\exp(-0.230) - 1 \approx -0.206 \quad \Rightarrow \quad \text{Wages are 20.6\% lower}
+\]
+
+\subsection*{3. Summary Table}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Variable Type} & \textbf{Interpretation} & \textbf{Formula} \\
+\hline
+Continuous (\texttt{EDUC}, \texttt{EXPER}) & Approx. \% change per unit increase & \( \beta \cdot 100 \) \\
+\hline
+Dummy (\texttt{FEMALE}, \texttt{UNION}) & \% difference from base group & \( (\exp(\beta) - 1) \cdot 100 \) \\
+\hline
+\end{tabular}
+\end{center}
+
+
+\section*{1. Contemporaneous Exogeneity (Weakest)}
+
+\[
+\mathbb{E}[\varepsilon_{it} \mid X_{it}] = 0 \quad \text{for } t = 1, \dots, T
+\]
+
+\begin{itemize}
+  \item Error term is uncorrelated with the explanatory variables from the same time period.
+  \item Assumption used in standard cross-sectional regressions.
+  \item Allows for correlation with past or future values of the regressors.
+\end{itemize}
+
+\section*{2. Sequential Exogeneity (Intermediate)}
+
+\[
+\mathbb{E}[\varepsilon_{it} \mid X_{i1}, X_{i2}, \dots, X_{it}] = 0 \quad \text{for } t = 1, \dots, T
+\]
+
+\begin{itemize}
+  \item Error term is uncorrelated with current and all past regressors.
+  \item Stronger than contemporaneous exogeneity.
+  \item Appropriate when past \( X \)'s influence current outcomes, but future values do not respond to current shocks.
+  \item Implies contemporaneous exogeneity.
+\end{itemize}
+
+\section*{3. Strict Exogeneity (Strongest)}
+
+\[
+\mathbb{E}[\varepsilon_{it} \mid X_{i1}, X_{i2}, \dots, X_{iT}] = 0 \quad \text{for } t = 1, \dots, T
+\]
+
+\begin{itemize}
+  \item Error term is uncorrelated with regressors from all time periods (past, present, and future).
+  \item Strongest assumption; it rules out feedback from shocks to future values of \( X \).
+  \item Implies both sequential and contemporaneous exogeneity.
+  \item Often unrealistic in economic applications with dynamic behavior.
+\end{itemize}
+
+\section*{4. Interpretation Under Sequential Exogeneity}
+
+Assume the model is:
+\[
+Y_{it} = X_{it}'\beta + \varepsilon_{it}
+\]
+
+If we assume sequential exogeneity, then:
+\[
+\mathbb{E}[Y_{it} \mid X_{i1}, \dots, X_{it}] = X_{it}'\beta
+\]
+
+That is, current and past values of \( X \) are sufficient to predict \( Y_{it} \); future values are not needed.
+
+\section*{5. Summary Comparison}
+
+\begin{center}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Assumption} & \textbf{Mathematical Form} & \textbf{Future \( X \)?} & \textbf{Lagged \( X \)?} & \textbf{Strength} \\
+\midrule
+Contemporaneous & \( \mathbb{E}[\varepsilon_{it} \mid X_{it}] = 0 \) & Yes & No & Weakest \\
+Sequential      & \( \mathbb{E}[\varepsilon_{it} \mid X_{i1}, \dots, X_{it}] = 0 \) & Yes & Yes & Intermediate \\
+Strict          & \( \mathbb{E}[\varepsilon_{it} \mid X_{i1}, \dots, X_{iT}] = 0 \) & No  & Yes & Strongest \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{1. What Is Pooled OLS?}
+
+Pooled OLS treats panel data as if it is a simple cross-sectional regression by \textit{stacking} all observations across time and individuals and estimating one large OLS regression:
+
+\[
+Y_{it} = X_{it}'\beta + \varepsilon_{it}, \quad t = 1,\dots,T,\quad i = 1,\dots,n
+\]
+
+The same \( \beta \) is assumed to apply across all individuals and time periods.
+
+\section*{2. Example Setup}
+
+Suppose we have:
+\begin{itemize}
+  \item \( T = 3 \) years: 1990, 1991, 1992
+  \item Regressors: COMPUTER use, EDUCation, EXperience, FEMALE dummy
+  \item Year dummies: \texttt{D91}, \texttt{D92} to control for year effects
+\end{itemize}
+
+The regression model is:
+\[
+\ln(\text{WAGE}_{it}) = \delta_0 + \delta_1 D91_t + \delta_2 D92_t + \beta_1 \text{COMPUTER}_{it} + \beta_2 \text{EDUC}_{it} + \beta_3 \text{EXPER}_{it} + \beta_4 \text{FEMALE}_{it} + \varepsilon_{it}
+\]
+
+This is a \textbf{static model} — no lagged variables, no dynamics.
+
+\section*{3. Estimating \( \beta \): Pooled OLS}
+
+The OLS estimator is:
+\[
+\hat{\beta}_{\text{pooled}} = (X'X)^{-1}X'Y
+\]
+
+Where:
+\begin{itemize}
+  \item \( X \): stacked regressor matrix
+  \item \( Y \): stacked outcome variable
+\end{itemize}
+
+Alternatively, in panel structure:
+\[
+\hat{\beta}_{\text{pooled}} = \left( \frac{1}{n} \sum_{i=1}^n X_i'X_i \right)^{-1} \left( \frac{1}{n} \sum_{i=1}^n X_i'Y_i \right)
+\]
+
+Where \( X_i \) is a \( T \times K \) matrix and \( Y_i \) a \( T \times 1 \) vector for individual \( i \).
+
+\section*{4. Key Assumption}
+
+To be valid, pooled OLS requires:
+\[
+\mathbb{E}[X_{it} \varepsilon_{it}] = 0
+\]
+
+This is known as \textbf{contemporaneous exogeneity}. It rules out correlation between the regressor and the error term in the same period.
+
+\section*{5. Limitations of Pooled OLS}
+
+\begin{itemize}
+  \item Ignores individual-specific unobserved heterogeneity
+  \item Assumes no correlation between regressors and individual effects
+  \item OLS standard errors can be misleading due to serial correlation within individuals
+\end{itemize}
+
+\section*{6. Alternatives}
+
+To address these issues, use panel-specific methods:
+\begin{enumerate}
+  \item First-differencing
+  \item Fixed effects (within estimator)
+  \item Random effects (GLS)
+\end{enumerate}
+
+\section*{7. Summary}
+
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Concept} & \textbf{Explanation} \\
+\midrule
+Pooled OLS & Runs OLS on stacked panel data \\
+Key Assumption & \( \mathbb{E}[X_{it} \varepsilon_{it}] = 0 \) \\
+Limitation & Ignores time correlation within individuals \\
+Usefulness & Simple, best when heterogeneity is small or controlled \\
+Alternatives & Fixed effects, random effects, first differencing \\
+\bottomrule
+\end{tabular}
+
+The regression model shown is:
+
+\[
+\ln(\text{WAGE}_{it}) = \delta_0 + \delta_1 D91_t + \delta_2 D92_t + \beta_1 \text{COMPUTER}_{it} + \beta_2 \text{EDUC}_{it} + \beta_3 \text{EXPER}_{it} + \beta_4 \text{FEMALE}_{it} + \varepsilon_{it}
+\]
+
+This specification includes year dummies for 1991 and 1992, and assumes the slope coefficients \( \beta_1, \beta_2, \ldots \) are constant over time.
+
+\section*{Why Are There No Interaction Terms?}
+
+\subsection*{1. Homogeneous Effect Assumption}
+
+The model assumes that the effects of explanatory variables are the same in each year:
+
+\[
+\frac{\partial \ln(\text{WAGE}_{it})}{\partial \text{EDUC}_{it}} = \beta_2 \quad \text{for all } t
+\]
+
+Including interaction terms like \( D91_t \cdot \text{EDUC}_{it} \) would allow slope coefficients to vary by year, but this is not necessary unless we have evidence that such effects differ across time.
+
+\subsection*{2. Time Effects Are Captured by Intercepts}
+
+The dummies \( D91_t \) and \( D92_t \) control for time-specific shifts in wages, such as macroeconomic conditions or inflation, that affect all individuals equally. These shifts are captured by differences in the intercept:
+
+\[
+\text{Year-specific effects: } \delta_1 \text{ and } \delta_2
+\]
+
+\subsection*{3. Parsimony and Precision}
+
+Including unnecessary interaction terms increases model complexity and reduces estimation precision. If the coefficients are truly constant across time, omitting the interactions yields more efficient estimates.
+
+\subsection*{4. No Theoretical Justification for Varying Slopes}
+
+Unless theory or prior evidence suggests that the effect of a regressor (e.g., education) varies across years, we do not include interaction terms.
+
+\section*{Summary Table}
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Reason} & \textbf{Explanation} \\
+\midrule
+Homogeneous effects & Assumes same slope \( \beta \) across all years \\
+Time controls via dummies & Year-specific intercepts absorb common shocks \\
+Model simplicity & Avoids unnecessary complexity and multicollinearity \\
+No strong theory for interactions & No need to test for year-specific slopes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{Unobserved Heterogeneity}
+
+In panel data models, a central concern is \textbf{unobserved heterogeneity}, which refers to unmeasured individual-specific characteristics that may bias estimation results.
+
+Let \( C_i \) denote unobserved characteristics for individual \( i \), such as ability or motivation. If \( C_i \) is related to regressors, omitting it leads to bias.
+
+\subsection*{Population Objective}
+
+We are interested in the conditional expectation:
+\[
+\mathbb{E}[Y_{it} \mid X_{i1}, X_{i2}, \dots, X_{iT}, C_i]
+\]
+but unfortunately, \( C_i \) is not observed.
+
+\subsection*{Linear Unobserved Effects Model}
+
+We often specify the model as:
+\[
+Y_{it} = \beta_0 + X_{it}' \beta + C_i + \varepsilon_{it}
+\]
+where:
+\begin{itemize}
+    \item \( X_{it} \): a \( K \times 1 \) vector of explanatory variables
+    \item \( C_i \): time-invariant, individual-specific unobservable effect
+    \item \( \varepsilon_{it} \): time-varying idiosyncratic error
+\end{itemize}
+
+We assume:
+\[
+\mathbb{E}[\varepsilon_{it} \mid X_{it}] = 0 \quad \text{for } t = 1, \dots, T
+\]
+
+However, if:
+\[
+\mathbb{E}[X_{it} C_i] \neq 0
+\]
+then \( X_{it} \) is endogenous, and pooled OLS will be \textbf{inconsistent} due to omitted variable bias.
+
+\subsection*{Solutions to Unobserved Heterogeneity}
+
+\paragraph{Proxy Variable}  
+Use an observable variable (e.g., IQ) to capture the influence of \( C_i \). This is rarely practical.
+
+\paragraph{Instrumental Variables}  
+Use instruments that are correlated with \( X_{it} \) but uncorrelated with \( C_i \). Validity of instruments is crucial.
+
+\paragraph{Panel Data Solutions}
+
+Panel data methods offer powerful tools to eliminate or control for \( C_i \):
+
+\begin{itemize}
+    \item \textbf{First Differences:}
+    \[
+    \Delta Y_{it} = \Delta X_{it}' \beta + \Delta \varepsilon_{it}
+    \]
+    Since \( C_i \) is time-invariant, it disappears under differencing.
+
+    \item \textbf{Fixed Effects (Within Estimator):}
+    \[
+    Y_{it} - \bar{Y}_i = (X_{it} - \bar{X}_i)'\beta + (\varepsilon_{it} - \bar{\varepsilon}_i)
+    \]
+    This removes \( C_i \) by demeaning each individual's observations.
+
+    \item \textbf{Random Effects:}
+    Assumes \( C_i \sim \text{iid} \) and uncorrelated with \( X_{it} \), i.e.:
+    \[
+    \mathbb{E}[X_{it} C_i] = 0
+    \]
+    Provides more efficient estimates than FE under stronger assumptions.
+\end{itemize}
+
+\section*{First Differencing}
+
+Suppose we have a panel with two periods \( T = 2 \), and we consider the linear unobserved effects model:
+\[
+Y_{it} = \beta_0 + X_{it}' \beta + C_i + \varepsilon_{it}
+\]
+
+Define the first differences:
+\[
+\begin{aligned}
+\Delta Y_i &= Y_{i2} - Y_{i1} \\
+\Delta X_i &= X_{i2} - X_{i1} \\
+\Delta \varepsilon_i &= \varepsilon_{i2} - \varepsilon_{i1}
+\end{aligned}
+\]
+
+Now if we difference the model:
+\[
+\begin{aligned}
+\Delta Y_i &= Y_{i2} - Y_{i1} \\
+&= (\beta_0 + X_{i2}' \beta + C_i + \varepsilon_{i2}) - (\beta_0 + X_{i1}' \beta + C_i + \varepsilon_{i1}) \\
+&= (X_{i2} - X_{i1})' \beta + (\varepsilon_{i2} - \varepsilon_{i1}) \\
+&= \Delta X_i' \beta + \Delta \varepsilon_i
+\end{aligned}
+\]
+
+\noindent\textbf{Key insight:} The time-invariant component \( C_i \) is removed through differencing.
+
+\section*{When is First Differencing Valid?}
+
+To estimate \( \beta \) consistently, the following conditions must hold:
+
+\begin{enumerate}
+    \item \textbf{Random sampling across individuals} \( i \).
+
+    \item \textbf{Orthogonality (Strict Exogeneity):}
+    \[
+    \mathbb{E}[\Delta X_i' \Delta \varepsilon_i] = 0
+    \]
+    That is,
+    \[
+    \mathbb{E}[(X_{i2} - X_{i1})'(\varepsilon_{i2} - \varepsilon_{i1})] = 0
+    \]
+    Expanding:
+    \[
+    \mathbb{E}[X_{i2}' \varepsilon_{i2}] + \mathbb{E}[X_{i1}' \varepsilon_{i1}] - \mathbb{E}[X_{i2}' \varepsilon_{i1}] - \mathbb{E}[X_{i1}' \varepsilon_{i2}] = 0
+    \]
+    To ensure this, we require:
+    \begin{itemize}
+        \item \textbf{Contemporaneous exogeneity:} \( \mathbb{E}[X_{it}' \varepsilon_{it}] = 0 \)
+        \item \textbf{No serial correlation between \( X \) and \( \varepsilon \):} \( \mathbb{E}[X_{i2}' \varepsilon_{i1}] = \mathbb{E}[X_{i1}' \varepsilon_{i2}] = 0 \)
+    \end{itemize}
+    Combined, this implies \textbf{strict exogeneity:}
+    \[
+    \mathbb{E}[\varepsilon_{it} \mid X_{i1}, X_{i2}] = 0 \quad \text{for } t = 1,2
+    \]
+
+    \item \textbf{Full rank condition:}
+    \[
+    \text{Rank}(\mathbb{E}[\Delta X_i \Delta X_i']) = K
+    \]
+    This ensures no perfect multicollinearity after differencing.
+\end{enumerate}
+
+\section*{First-Differencing and Intercepts}
+
+Suppose we have a model with time-specific intercepts (\( T = 2 \)) where \( D2_t \) is an indicator variable for period \( t = 2 \):
+
+\[
+Y_{it} = \beta_0 + \beta_1 D2_t + \beta_2 x_{it} + C_i + \varepsilon_{it}
+\]
+
+After differencing, the second-period intercept becomes the new intercept in the differenced model:
+
+\[
+\Delta Y_i = \beta_1 + \beta_2 \Delta x_i + \Delta \varepsilon_i
+\]
+
+\noindent\textbf{Why?} Because:
+
+\[
+\Delta D2_t = D2_2 - D2_1 = 1 - 0 = 1
+\]
+
+So the difference contributes \( \beta_1 \cdot 1 = \beta_1 \), which appears as the new intercept.
+
+\bigskip
+\noindent
+If we are differencing with \( T > 2 \), it is generally easier to add the \( T - 1 \) period-specific intercepts (time dummies) \emph{after} differencing, since the differencing transformation eliminates one time period.
+\section*{Fixed Effects vs. Random Effects}
+
+We begin with the linear unobserved effects model:
+\[
+Y_{it} = X_{it}' \beta + C_i + \varepsilon_{it}, \quad t = 1, 2, \dots, T
+\]
+where:
+\begin{itemize}
+    \item \( X_{it} \) is a \( K \times 1 \) vector of observed variables
+    \item \( C_i \) is a scalar individual-specific unobserved effect
+    \item \( \varepsilon_{it} \) is a time-varying error term
+\end{itemize}
+
+\subsection*{Interpretation of \( C_i \)}
+
+The term \( C_i \) is also referred to as:
+\begin{itemize}
+    \item Latent variable
+    \item Fixed effect
+    \item Unobserved heterogeneity
+    \item Individual effect
+\end{itemize}
+
+\subsection*{Traditional Definitions}
+
+\begin{itemize}
+    \item \textbf{Fixed Effects:} \( C_i \) is treated as a parameter to estimate for each \( i \). It may be correlated with \( X_{it} \).
+    \item \textbf{Random Effects:} \( C_i \) is modeled as a random variable and assumed to be uncorrelated with \( X_{it} \):
+    \[
+    \text{Cov}(X_{it}, C_i) = 0 \quad \text{for all } t, \quad \text{or } \mathbb{E}[C_i \mid X_{i1}, \dots, X_{iT}] = \mathbb{E}[C_i]
+    \]
+\end{itemize}
+
+\subsection*{Modern Clarification}
+
+\begin{itemize}
+    \item Random effects assume no correlation between \( C_i \) and the regressors.
+    \item Fixed effects \emph{do not} require \( C_i \) to be fixed (non-random), but allow arbitrary correlation between \( C_i \) and \( X_{it} \).
+\end{itemize}
+
+\section*{Strict Exogeneity (Conditional)}
+
+When \( C_i \) is included in the model, we redefine strict exogeneity conditional on \( C_i \):
+\[
+\mathbb{E}[Y_{it} \mid X_{i1}, \dots, X_{iT}, C_i] = X_{it}' \beta + C_i
+\]
+
+This implies:
+\[
+\text{``Regressors } X_{it} \text{ are strictly exogenous conditional on } C_i\text{''}
+\]
+
+\subsection*{Compare to Previous Assumption (Without \( C_i \))}
+
+Previously, strict exogeneity was:
+\[
+\mathbb{E}[Y_{it} \mid X_{i1}, \dots, X_{iT}] = X_{it}' \beta
+\]
+
+But when \( C_i \) is correlated with \( X_{it} \), this breaks down:
+\[
+\mathbb{E}[Y_{it} \mid X_{i1}, \dots, X_{iT}] = X_{it}' \beta + \mathbb{E}[C_i \mid X_{i1}, \dots, X_{iT}]
+\]
+
+Thus, we must condition on \( C_i \) for strict exogeneity to hold.
+
+\section*{Pooled OLS Revisited}
+
+Under certain assumptions, we can still use pooled OLS to estimate the linear model with unobserved effects. Rewrite the unobserved effects model as:
+
+\[
+Y_{it} = \beta_0 + X_{it}'\beta + C_i + \varepsilon_{it}
+\]
+
+Define the composite error term:
+
+\[
+\nu_{it} = C_i + \varepsilon_{it}
+\quad \Rightarrow \quad
+Y_{it} = \beta_0 + X_{it}'\beta + \nu_{it}
+\]
+
+\subsection*{When is Pooled OLS Consistent?}
+
+Pooled OLS will yield consistent estimates of \( \beta \) if:
+
+\[
+\mathbb{E}[X_{it} \nu_{it}] = 0 \quad \text{for all } t = 1, \dots, T
+\]
+
+This requires two conditions:
+\begin{align}
+\mathbb{E}[X_{it} \varepsilon_{it}] &= 0 \tag{1} \\\\
+\mathbb{E}[X_{it} C_i] &= 0 \tag{2}
+\end{align}
+
+\noindent
+Equation (1) requires no contemporaneous correlation between regressors and idiosyncratic shocks. Equation (2) rules out omitted variable bias due to correlation between regressors and unobserved effects.
+
+\subsection*{Interpretation and Limitations}
+
+\begin{itemize}
+    \item Assumption (2) is quite strong and often unrealistic.
+    \item For example, in a model where \( Y_{it-1} \) is included as a regressor, it will likely be correlated with \( C_i \), violating assumption (2).
+    \item Therefore, pooled OLS would be inappropriate in such dynamic models.
+\end{itemize}
+
+\subsection*{Serial Correlation of Errors}
+
+Even when assumptions (1) and (2) hold, the composite error \( \nu_{it} \) contains \( C_i \), which is constant over time. Thus, for any \( t \neq s \):
+
+\[
+\text{Cov}(\nu_{it}, \nu_{is}) \neq 0
+\]
+
+This means that \( \nu_{it} \) is serially correlated. To address this, we recommend using cluster-robust standard errors when estimating with pooled OLS.
+
+\subsection*{Asymptotics Matter}
+
+Consider two asymptotic frameworks:
+
+\begin{itemize}
+    \item \textbf{Fixed \( T \), large \( N \)}: Traditional panel data asymptotics. Pooled OLS may be consistent under assumptions (1) and (2).
+    \item \textbf{Large \( T \), fixed \( N \)}: Time-series asymptotics. Serial correlation in \( \nu_{it} \) may persist as \( T \to \infty \), violating assumptions of weak dependence.
+\end{itemize}
+
+\subsection*{Conclusion}
+
+Pooled OLS can be used under:
+\begin{itemize}
+    \item \( \mathbb{E}[X_{it} \varepsilon_{it}] = 0 \)
+    \item \( \mathbb{E}[X_{it} C_i] = 0 \)
+\end{itemize}
+
+However:
+\begin{itemize}
+    \item Serial correlation in \( \nu_{it} \) requires robust standard errors.
+    \item Dynamic models often violate these assumptions.
+    \item Consider asymptotic properties carefully when interpreting pooled OLS estimates.
+\end{itemize}
+
+\section*{Random Effects Estimation}
+
+We consider the standard panel data model with unobserved individual effects:
+\[
+Y_{it} = X_{it}' \beta + C_i + \varepsilon_{it}
+\]
+
+Define the composite error term:
+\[
+\nu_{it} = C_i + \varepsilon_{it} \quad \Rightarrow \quad Y_{it} = X_{it}' \beta + \nu_{it}
+\]
+
+Random effects estimation treats \( C_i \) as part of the error term but imposes additional assumptions to allow for efficient estimation via Generalized Least Squares (GLS).
+
+\subsection*{Assumption RE.1}
+
+\begin{itemize}
+    \item[(a)] \textbf{Strict Exogeneity (Conditional on \( C_i \)):}
+    \[
+    \mathbb{E}[\varepsilon_{it} \mid X_{i1}, \dots, X_{iT}, C_i] = 0 \quad \text{for } t = 1, \dots, T
+    \]
+
+    \item[(b)] \textbf{Independence Between \( C_i \) and \( X_{it} \):}
+    \[
+    \mathbb{E}[C_i \mid X_{i1}, \dots, X_{iT}] = \mathbb{E}[C_i]
+    \]
+\end{itemize}
+
+Assumption (a) is equivalent to strict exogeneity used in fixed effects models. Assumption (b) is stronger and assumes that \( C_i \) is mean independent of all regressors across time. It implies that knowing any \( X_{it} \) does not help predict \( C_i \).
+
+\subsection*{Why Random Effects?}
+
+RE estimation is more efficient than Fixed Effects (FE) when assumptions hold. It explicitly models the serial correlation in the composite error caused by the individual-specific effect \( C_i \).
+
+\subsection*{Stacked Formulation (over \( T \) periods)}
+
+Define:
+\[
+Y_i = X_i \beta + \nu_i, \quad \text{where} \quad \nu_i = C_i \cdot \mathbf{1}_T + \varepsilon_i
+\]
+
+Here:
+\begin{itemize}
+    \item \( \mathbf{1}_T \) is a \( T \times 1 \) vector of ones
+    \item \( \varepsilon_i \) is a \( T \times 1 \) vector of idiosyncratic errors
+\end{itemize}
+
+Then the unconditional variance of the composite error is:
+\[
+\Omega = \mathbb{E}[\nu_i \nu_i']
+\]
+
+\noindent
+\textbf{Properties of \( \Omega \):}
+\begin{itemize}
+    \item \( \Omega \) is a \( T \times T \) positive definite matrix
+    \item It is the same for all individuals \( i \), assuming iid sampling across \( i \)
+    \item It reflects the structure induced by the presence of \( C_i \)
+\end{itemize}
+
+\section*{Covariance Matrix for Random Effects}
+
+Consider the random effects model:
+\[
+Y_{it} = X_{it}'\beta + C_i + \varepsilon_{it}
+\]
+where:
+\begin{itemize}
+  \item \( C_i \sim \text{IID}(0, \sigma_C^2) \) is the unobserved individual-specific effect,
+  \item \( \varepsilon_{it} \sim \text{IID}(0, \sigma_\varepsilon^2) \) is the idiosyncratic error,
+  \item and \( C_i \) is independent of \( \varepsilon_{it} \).
+\end{itemize}
+
+Stacking the model over time for individual \( i \):
+\[
+\bm{Y}_i = \bm{X}_i \beta + \bm{\nu}_i, \quad \text{where } \bm{\nu}_i = C_i \cdot \bm{1}_T + \bm{\varepsilon}_i
+\]
+
+We are interested in the variance of \( \bm{\nu}_i \), the composite error term. Define:
+\[
+\Omega = \mathbb{E}[\bm{\nu}_i \bm{\nu}_i']
+\]
+
+Under the assumptions:
+\begin{align*}
+\mathbb{E}[\varepsilon_{it}] &= 0, \quad \mathbb{E}[\varepsilon_{it}^2] = \sigma_\varepsilon^2, \\
+\mathbb{E}[C_i] &= 0, \quad \mathbb{E}[C_i^2] = \sigma_C^2, \\
+\mathbb{E}[\varepsilon_{it} \varepsilon_{is}] &= 0 \text{ for } t \neq s, \\
+\mathbb{E}[C_i \varepsilon_{it}] &= 0 \text{ (independence)},
+\end{align*}
+
+Then for the composite error:
+\[
+\nu_{it} = C_i + \varepsilon_{it}
+\]
+
+\textbf{We derive the elements of the covariance matrix:}
+
+\begin{itemize}
+  \item Diagonal elements (variance):
+  \[
+  \mathbb{E}[\nu_{it}^2] = \mathbb{E}[(C_i + \varepsilon_{it})^2] = \sigma_C^2 + \sigma_\varepsilon^2
+  \]
+  
+  \item Off-diagonal elements (covariance across time):
+  \[
+  \mathbb{E}[\nu_{it} \nu_{is}] = \mathbb{E}[(C_i + \varepsilon_{it})(C_i + \varepsilon_{is})] = \sigma_C^2 \quad \text{for } t \ne s
+  \]
+\end{itemize}
+
+Thus, the full \( T \times T \) covariance matrix of \( \bm{\nu}_i \) is:
+
+\[
+\boxed{
+\Omega = \sigma_\varepsilon^2 I_T + \sigma_C^2 \bm{1}_T \bm{1}_T'
+}
+\]
+
+\section*{Derivation of the Random Effects Covariance Matrix}
+
+We begin with the random effects model:
+
+\[
+\nu_{it} = C_i + \varepsilon_{it}
+\]
+
+Where:
+\begin{itemize}
+    \item \( C_i \sim \text{iid}(0, \sigma_C^2) \): individual-specific (time-invariant) random effect
+    \item \( \varepsilon_{it} \sim \text{iid}(0, \sigma_\varepsilon^2) \): idiosyncratic error
+    \item \( C_i \perp \varepsilon_{it} \) for all \( t \)
+\end{itemize}
+
+Stack over time \( t = 1, \dots, T \) for individual \( i \):
+
+\[
+\bm{\nu}_i =
+\begin{bmatrix}
+\nu_{i1} \\
+\nu_{i2} \\
+\vdots \\
+\nu_{iT}
+\end{bmatrix}
+= C_i \cdot \bm{1}_T + 
+\begin{bmatrix}
+\varepsilon_{i1} \\
+\varepsilon_{i2} \\
+\vdots \\
+\varepsilon_{iT}
+\end{bmatrix}
+= C_i \cdot \bm{1}_T + \bm{\varepsilon}_i
+\]
+
+We want to derive the covariance matrix:
+\[
+\Omega = \mathbb{E}[\bm{\nu}_i \bm{\nu}_i']
+\]
+
+Substitute the composite error:
+\[
+\Omega = \mathbb{E}[(C_i \bm{1}_T + \bm{\varepsilon}_i)(C_i \bm{1}_T + \bm{\varepsilon}_i)']
+\]
+
+Using the identity \( (a + b)(a + b)' = aa' + ab' + ba' + bb' \):
+\[
+\Omega = \mathbb{E}[C_i^2 \bm{1}_T \bm{1}_T'] + \mathbb{E}[C_i \bm{1}_T \bm{\varepsilon}_i'] + \mathbb{E}[\bm{\varepsilon}_i C_i \bm{1}_T'] + \mathbb{E}[\bm{\varepsilon}_i \bm{\varepsilon}_i']
+\]
+
+Apply the assumptions:
+\begin{align*}
+\mathbb{E}[C_i^2] &= \sigma_C^2 \\
+\mathbb{E}[C_i \bm{\varepsilon}_i'] &= \bm{0} \\
+\mathbb{E}[\bm{\varepsilon}_i \bm{\varepsilon}_i'] &= \sigma_\varepsilon^2 I_T
+\end{align*}
+
+So:
+\[
+\Omega = \sigma_C^2 \bm{1}_T \bm{1}_T' + \sigma_\varepsilon^2 I_T
+\]
+
+\[
+\boxed{
+\Omega = \sigma_\varepsilon^2 I_T + \sigma_C^2 \bm{1}_T \bm{1}_T'
+}
+\]
+
+\subsection*{Interpretation}
+
+\begin{itemize}
+    \item \( \sigma_\varepsilon^2 I_T \): reflects uncorrelated individual-time shocks.
+    \item \( \sigma_C^2 \bm{1}_T \bm{1}_T' \): adds equal covariance across time for the same individual, due to \( C_i \).
+\end{itemize}
+
+This structure captures the serial correlation of errors in panel data induced by unobserved individual heterogeneity \( C_i \). It is central to the random effects model and allows feasible GLS estimation.
+
+\section*{Feasible GLS Estimation of the Random Effects Model}
+
+We begin with the random effects model:
+\[
+Y_{it} = X_{it}' \beta + C_i + \varepsilon_{it}
+\]
+Define the composite error term:
+\[
+\nu_{it} = C_i + \varepsilon_{it}
+\]
+
+Stacked form:
+\[
+Y_i = X_i \beta + \nu_i, \quad \text{with } \nu_i = C_i \cdot \bm{1}_T + \varepsilon_i
+\]
+
+\subsection*{Goal: Feasible GLS Estimator}
+
+The Generalized Least Squares (GLS) estimator is:
+\[
+\hat{\beta}_{\text{GLS}} = \left( \sum_{i=1}^n X_i' \Omega^{-1} X_i \right)^{-1} \left( \sum_{i=1}^n X_i' \Omega^{-1} Y_i \right)
+\]
+
+This is infeasible because \( \Omega = \mathbb{E}[\nu_i \nu_i'] \) is unknown.
+
+\subsection*{Assumptions (RE.3: Homoskedasticity)}
+
+\begin{itemize}
+    \item[(a)] \( \mathbb{E}[\varepsilon_i \varepsilon_i' \mid X_i, C_i] = \sigma_\varepsilon^2 I_T \)
+    \item[(b)] \( \mathbb{E}[C_i^2 \mid X_i] = \sigma_C^2 \)
+\end{itemize}
+
+Under these assumptions, the covariance matrix has the form:
+\[
+\Omega = \sigma_\varepsilon^2 I_T + \sigma_C^2 \bm{1}_T \bm{1}_T'
+\]
+
+\subsection*{Step-by-Step Estimation (Feasible GLS)}
+
+\begin{enumerate}
+    \item \textbf{Estimate \( \beta \) using pooled OLS}:
+    \[
+    \tilde{\beta} = (X'X)^{-1} X'Y
+    \]
+
+    \item \textbf{Compute residuals}:
+    \[
+    \hat{\nu}_{it} = Y_{it} - X_{it}' \tilde{\beta}
+    \]
+
+    \item \textbf{Estimate total variance of residuals (within + between)}:
+    \[
+    \hat{\sigma}_\nu^2 = \frac{1}{nT - K} \sum_{i=1}^n \sum_{t=1}^T \hat{\nu}_{it}^2
+    \]
+
+    \item \textbf{Estimate cross-time component (\( \hat{\sigma}_C^2 \))}:
+    \[
+    \hat{\sigma}_C^2 = \frac{1}{nT(T-1)/2 - K} \sum_{i=1}^n \sum_{t=1}^{T-1} \sum_{s = t+1}^T \hat{\nu}_{it} \hat{\nu}_{is}
+    \]
+
+    \item \textbf{Solve for \( \hat{\sigma}_\varepsilon^2 \)}:
+    \[
+    \hat{\sigma}_\varepsilon^2 = \hat{\sigma}_\nu^2 - \hat{\sigma}_C^2
+    \]
+
+    \item \textbf{Form estimated \( \hat{\Omega} \)}:
+    \[
+    \hat{\Omega} = \hat{\sigma}_\varepsilon^2 I_T + \hat{\sigma}_C^2 \bm{1}_T \bm{1}_T'
+    \]
+
+    \item \textbf{Estimate \( \beta \) using FGLS}:
+    \[
+    \hat{\beta}_{\text{RE}} = \left( \sum_{i=1}^n X_i' \hat{\Omega}^{-1} X_i \right)^{-1} \left( \sum_{i=1}^n X_i' \hat{\Omega}^{-1} Y_i \right)
+    \]
+\end{enumerate}
+
+This yields a consistent and efficient estimate of \( \beta \) under the random effects assumptions.
+
+\section*{Within Transformation and Fixed Effects Estimator}
+
+To eliminate the unobserved individual effect \( C_i \), the Fixed Effects (FE) estimator relies on the idea of differencing out \( C_i \) within an individual over time.
+
+\subsection*{Step 1: Time Averaging (Over \( T \) periods)}
+
+We start with the panel data model:
+\[
+Y_{it} = X_{it}'\beta + C_i + \varepsilon_{it}
+\]
+
+Average over time (for each individual \( i \)):
+
+\[
+\bar{Y}_i = \frac{1}{T} \sum_{t=1}^T Y_{it} = \frac{1}{T} \sum_{t=1}^T \left( X_{it}' \beta + C_i + \varepsilon_{it} \right)
+\]
+
+\[
+\Rightarrow \bar{Y}_i = \bar{X}_i' \beta + C_i + \bar{\varepsilon}_i
+\]
+
+This is the **averaged model**:
+\[
+\bar{Y}_i = \bar{X}_i' \beta + C_i + \bar{\varepsilon}_i \tag{1.2}
+\]
+
+\subsection*{Step 2: Subtracting (Demeaning)}
+
+Now subtract the averaged model from the original model:
+
+\[
+Y_{it} - \bar{Y}_i = (X_{it} - \bar{X}_i)'\beta + (\varepsilon_{it} - \bar{\varepsilon}_i)
+\]
+
+This gives the **within-transformed model**:
+\[
+\tilde{Y}_{it} = \tilde{X}_{it}' \beta + \tilde{\varepsilon}_{it} \tag{1.3}
+\]
+
+where:
+\begin{align*}
+\tilde{Y}_{it} &= Y_{it} - \bar{Y}_i \\
+\tilde{X}_{it} &= X_{it} - \bar{X}_i \\
+\tilde{\varepsilon}_{it} &= \varepsilon_{it} - \bar{\varepsilon}_i
+\end{align*}
+
+\subsection*{Interpretation}
+
+\begin{itemize}
+    \item \( C_i \) drops out because it does not vary over time.
+    \item The estimator uses only **within-individual variation** in \( X_{it} \).
+    \item Time-invariant regressors are eliminated.
+\end{itemize}
+
+\subsection*{Estimation}
+
+We can now run OLS on the transformed equation:
+\[
+\tilde{Y}_{it} = \tilde{X}_{it}' \beta + \tilde{\varepsilon}_{it}
+\]
+
+This is called the **Fixed Effects (within) estimator**. It provides a consistent estimate of \( \beta \) even when \( C_i \) is correlated with \( X_{it} \).
+
+\section*{Fixed Effects Estimator via Within Transformation}
+
+We begin with the panel data model:
+\[
+Y_{it} = X_{it}' \beta + C_i + \varepsilon_{it}, \quad t = 1, \dots, T
+\]
+where:
+\begin{itemize}
+  \item \( X_{it} \): time-varying regressors,
+  \item \( C_i \): unobserved individual-specific effect,
+  \item \( \varepsilon_{it} \): idiosyncratic error.
+\end{itemize}
+
+\subsection*{Step 1: Averaging Over Time}
+
+We average the model over time for each individual:
+\[
+\bar{Y}_i = \frac{1}{T} \sum_{t=1}^T Y_{it}, \quad
+\bar{X}_i = \frac{1}{T} \sum_{t=1}^T X_{it}, \quad
+\bar{\varepsilon}_i = \frac{1}{T} \sum_{t=1}^T \varepsilon_{it}
+\]
+
+Substituting into the model:
+\[
+\bar{Y}_i = \bar{X}_i' \beta + C_i + \bar{\varepsilon}_i \tag{1.2}
+\]
+
+\subsection*{Step 2: Subtracting (Within Transformation)}
+
+Now subtract equation (1.2) from the original model:
+\begin{align*}
+Y_{it} - \bar{Y}_i &= (X_{it} - \bar{X}_i)' \beta + (\varepsilon_{it} - \bar{\varepsilon}_i) \\
+\Rightarrow \tilde{Y}_{it} &= \tilde{X}_{it}' \beta + \tilde{\varepsilon}_{it} \tag{1.3}
+\end{align*}
+where:
+\[
+\tilde{Y}_{it} = Y_{it} - \bar{Y}_i, \quad
+\tilde{X}_{it} = X_{it} - \bar{X}_i, \quad
+\tilde{\varepsilon}_{it} = \varepsilon_{it} - \bar{\varepsilon}_i
+\]
+
+This transformation eliminates the unobserved effect \( C_i \) from the model.
+
+\subsection*{Implications}
+
+\begin{itemize}
+  \item The fixed effects estimator uses only within-individual variation.
+  \item It allows for \( C_i \) to be arbitrarily correlated with \( X_{it} \).
+  \item It removes time-invariant variables from the model since their deviations are always zero.
+\end{itemize}
+
+\subsection*{Estimation}
+
+We can now estimate \( \beta \) by applying OLS to the within-transformed model:
+\[
+\tilde{Y}_{it} = \tilde{X}_{it}' \beta + \tilde{\varepsilon}_{it}
+\]
+
+This is the \textbf{Fixed Effects (Within) Estimator}.
+
+\subsection*{Consistency of the Fixed Effects Estimator}
+
+After performing the within transformation, we arrive at the demeaned model:
+\[
+\ddot{Y}_{it} = \ddot{X}_{it}' \beta + \ddot{\varepsilon}_{it}, \quad t = 1, \dots, T
+\]
+where:
+\begin{align*}
+\ddot{Y}_{it} &= Y_{it} - \bar{Y}_i \\
+\ddot{X}_{it} &= X_{it} - \bar{X}_i \\
+\ddot{\varepsilon}_{it} &= \varepsilon_{it} - \bar{\varepsilon}_i
+\end{align*}
+
+This transformation removes the individual fixed effect \( C_i \), allowing us to estimate \( \beta \) using OLS.
+
+\subsection*{Key Condition for Consistency}
+
+To ensure consistency of the fixed effects estimator, we require the orthogonality condition:
+\[
+\mathbb{E}[\ddot{X}_{it} \ddot{\varepsilon}_{it}] = 0
+\]
+which expands to:
+\[
+\mathbb{E}[(X_{it} - \bar{X}_i)(\varepsilon_{it} - \bar{\varepsilon}_i)] = 0
+\]
+
+\subsection*{Why This Holds}
+
+Under Assumption FE.1 (Strict Exogeneity):
+\[
+\mathbb{E}[\varepsilon_{it} \mid X_{i1}, \dots, X_{iT}, C_i] = 0 \quad \text{for all } t
+\]
+
+This implies:
+\[
+\mathbb{E}[\varepsilon_{it} \mid X_{i1}, \dots, X_{iT}] = 0
+\quad \text{and} \quad
+\mathbb{E}[\bar{\varepsilon}_i \mid X_{i1}, \dots, X_{iT}] = 0
+\]
+
+Thus:
+\[
+\mathbb{E}[\ddot{\varepsilon}_{it} \mid \ddot{X}_{i1}, \dots, \ddot{X}_{iT}] = 0
+\quad \Rightarrow \quad
+\mathbb{E}[\ddot{X}_{it} \ddot{\varepsilon}_{it}] = 0
+\]
+
+\subsection*{Conclusion}
+
+This orthogonality ensures that:
+\begin{itemize}
+    \item OLS on the within-transformed model yields a consistent estimator of \( \beta \).
+    \item The Fixed Effects estimator remains unbiased under strict exogeneity and appropriate sample conditions.
+\end{itemize}
+\subsection*{Identification and Efficiency of the Fixed Effects Estimator}
+
+\paragraph{Assumption FE.2 (Rank Condition).}
+\[
+\text{rank} \left( \sum_{t=1}^T \mathbb{E}[\ddot{X}_{it} \ddot{X}_{it}'] \right) = \text{rank} \left( \mathbb{E}[\ddot{X}_i' \ddot{X}_i] \right) = K
+\]
+
+This assumption ensures that the regressors \( \ddot{X}_{it} \) (demeaned regressors) have sufficient variation over time. If any component of \( X_{it} \) is time-invariant across all \( t \), then:
+\[
+\ddot{X}_{it} = X_{it} - \bar{X}_i = 0
+\]
+for all \( i \), and such regressors cannot be identified in the model.
+
+\paragraph{FE Estimator via OLS on Demeaned Data.}
+
+The Fixed Effects estimator can now be written as:
+\[
+\hat{\beta}_{\text{FE}} = \left( \sum_{i=1}^n \ddot{X}_i' \ddot{X}_i \right)^{-1} \left( \sum_{i=1}^n \ddot{X}_i' \ddot{Y}_i \right)
+\]
+
+This is the OLS estimator using the within-transformed (demeaned) data, where:
+\begin{align*}
+\ddot{X}_i &= \text{stack of } \ddot{X}_{it} = X_{it} - \bar{X}_i \text{ for all } t \\
+\ddot{Y}_i &= \text{stack of } \ddot{Y}_{it} = Y_{it} - \bar{Y}_i \text{ for all } t
+\end{align*}
+
+Even though \( C_i \) is removed by demeaning, the interpretation of \( \beta \) is still consistent with the original structural model.
+
+\paragraph{Assumption FE.3 (Homoskedasticity and No Serial Correlation).}
+\[
+\mathbb{E}[\varepsilon_i \varepsilon_i' \mid X_i, C_i] = \sigma_\varepsilon^2 I_T
+\]
+
+Under this assumption:
+\begin{itemize}
+    \item The error terms are homoskedastic (constant variance over time and individuals).
+    \item The errors are serially uncorrelated.
+    \item The variance does not depend on \( X_i \) or \( C_i \).
+\end{itemize}
+
+\noindent If FE.3 holds, then \( \hat{\beta}_{\text{FE}} \) is not only consistent, but also \textbf{efficient}.
+
+\section{Stationarity}
+
+The sample \( \{Y_1, \dots, Y_T\} \) is a realization of a dependent stochastic process. To analyze this process, we often consider the marginal distributions of \( Y_t \) and the joint distributions of \( (Y_t, Y_{t+1}, \dots, Y_{t+l}) \). 
+
+To make valid statistical inferences over time, we typically require some form of constancy in these distributions. This leads to the concept of \textbf{stationarity}.
+
+\subsection*{Covariance Stationarity (Weak Stationarity)}
+
+\textbf{Definition.} A stochastic process \( \{Y_t\} \) is said to be \textit{covariance stationary} if:
+
+\begin{enumerate}
+  \item \( \mu = \mathbb{E}[Y_t] \) is constant over time.
+  \item \( \sigma^2 = \text{Var}(Y_t) = \mathbb{E}[(Y_t - \mu)^2] \) is constant over time.
+  \item The autocovariance \( \gamma(k) = \text{Cov}(Y_t, Y_{t-k}) \) depends only on the lag \( k \), not on \( t \).
+\end{enumerate}
+
+This type of stationarity is also known as \textit{weak stationarity}.
+
+Here:
+\begin{itemize}
+  \item \( \gamma(k) \): \( k \)-th order autocovariance
+  \item \( \rho(k) = \text{Corr}(Y_t, Y_{t-k}) \): \( k \)-th order autocorrelation
+\end{itemize}
+
+\subsection*{Strict Stationarity}
+
+A stochastic process \( \{Y_t\} \) is \textit{strictly stationary} if the joint distribution of \( (Y_t, \dots, Y_{t+l}) \) is identical for all \( t \) and any \( l \).
+
+\textbf{Definition.} A process \( \{Z_t\} \) is strictly stationary if, for any finite integer \( r \), and any set of subscript indices \( t_1, t_2, \dots, t_r \), the joint distribution of:
+\[
+(Z_{t_1}, Z_{t_2}, \dots, Z_{t_r})
+\]
+depends only on \( t_1 - t, t_2 - t, \dots, t_r - t \), not on the time index \( t \) itself.
+
+\subsection*{Comparison}
+
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Property} & \textbf{Covariance Stationarity} & \textbf{Strict Stationarity} \\
+\hline
+Mean Constant? & Yes & Yes \\
+Variance Constant? & Yes & Yes \\
+Autocovariance Depends Only on Lag? & Yes & Yes \\
+Joint Distribution Time-Invariant? & No & Yes \\
+Implied by Strict Stationarity? & Yes & --- \\
+Implies Strict Stationarity? & Not necessarily & --- \\
+\hline
+\end{tabular}
+
+\section*{Further Concepts in Stationarity}
+
+\subsection*{Relative Time vs Absolute Time}
+
+In a strictly stationary process, only the \textit{relative time} or spacing between observations matters:
+\[
+(t_1 - t, t_2 - t, \dots, t_r - t)
+\]
+not the absolute time values \( t \).
+
+\textbf{Example:}
+
+\begin{align*}
+r &= 1, \quad t_1 = 5 \quad \Rightarrow \quad (Z_1, Z_5) \\
+t &= 12 \quad \Rightarrow \quad (Z_{12}, Z_{16})
+\end{align*}
+
+Both pairs have the same joint distribution.
+
+\subsection*{Theorem: Stationarity Under Transformation}
+
+\textbf{Theorem 11.} \textit{If \( Y_t \) is strictly stationary and}
+\[
+X_t = \phi(Y_t, Y_{t-1}, Y_{t-2}, \dots) \in \mathbb{R}^q
+\]
+\textit{is a random vector, then \( X_t \) is strictly stationary.}
+
+\textbf{Interpretation:} Stationarity is preserved under deterministic transformations involving lags of the process. This is particularly useful for linear filters, moving averages, and constructing estimators.
+
+\subsection*{Theoretical Examples: Stationary or Not?}
+
+\begin{enumerate}
+    \item \( Y_t \sim \text{iid} \): \textbf{Stationary (strict)}
+    \item \( Y_t = e_t + \theta e_{t-1} \), with \( e_t \sim \text{iid}, \mathbb{E}[e_t] = 0 \): \textbf{Stationary} (MA(1) process)
+    \item \( Y_t = Z \), for some random variable \( Z \): \textbf{Strictly stationary}, trivially constant
+    \item \( Y_t = t \): \textbf{Non-stationary} (mean grows over time)
+    \item \( Y_t = e_t + \frac{1}{t} e_{t-1} \): \textbf{Non-stationary} (coefficient changes with time)
+    \item \( Y_t = Y_{t-1} + e_t \), \( Y_0 = 0 \): \textbf{Non-stationary} (random walk, variance increases with time)
+    \item \( Y_t = (-1)^t \): \textbf{Strictly stationary} (periodic process with constant distribution)
+\end{enumerate}
+
+\subsection*{Important Clarification from Hansen (2021)}
+
+\begin{quote}
+Stationarity means that the distribution is constant over time. It does not, however, imply that the process has no dependence structure or that it lacks periodic patterns.
+\end{quote}
+
+\textbf{Interpretation:} This time series has a deterministic upward trend. Although the fluctuations appear regular, the mean changes over time, so the series is \textbf{non-stationary}.
+
+\section*{Ergodicity}
+
+\textbf{Intuition:} Ergodicity can be thought of as \textit{asymptotic independence}. It’s a minimal assumption needed to guarantee that a law of large numbers (LLN) holds for dependent data.
+
+\vspace{1em}
+\textit{Heuristic (Hayashi, 2000, p.101):}
+\begin{quote}
+A stationary process is ergodic if it is asymptotically independent, that is, if any two random variables positioned far apart in the sequence are almost independently distributed.
+\end{quote}
+
+Recall that if two random variables \( X \) and \( Y \) are independent, then:
+\[
+\mathbb{E}[XY] = \mathbb{E}[X] \cdot \mathbb{E}[Y].
+\]
+
+\subsection*{Definition (Hayashi, 2000)}
+
+A stationary process \( \{Z_t\} \) is \textbf{ergodic} if for any two bounded functions 
+\[
+f : \mathbb{R}^{k+1} \rightarrow \mathbb{R}, \quad g : \mathbb{R}^{l+1} \rightarrow \mathbb{R},
+\]
+we have:
+\[
+\lim_{s \to \infty} 
+\left|
+\mathbb{E} \left[ f(Z_t, \dots, Z_{t+k}) \cdot g(Z_{t+s}, \dots, Z_{t+s+l}) \right] 
+- 
+\mathbb{E}[f(Z_t, \dots, Z_{t+k})] \cdot \mathbb{E}[g(Z_t, \dots, Z_{t+l})]
+\right| = 0.
+\]
+
+\textbf{Interpretation:} Two variables in the sequence that are far apart behave as if they are independent.
+
+\subsection*{Stationary Ergodic Process}
+
+\textbf{Definition:} A process that is both stationary and ergodic is called an \textbf{ergodic stationary process} or a \textbf{stationary ergodic process}.
+
+\subsection*{Theorem 12 (Ergodic Theorem)}
+
+Let \( \{Z_t\} \) be a stationary and ergodic process with \( \mathbb{E}[Z_1] = \mu \). Then:
+
+\[
+\bar{Z}_T = \frac{1}{T} \sum_{t=1}^T Z_t \xrightarrow{\text{a.s.}} \mu.
+\]
+
+\textbf{Reference:} See Theorem 9.5.5 of Karlin and Taylor (1975).
+
+\subsection*{Why It Matters}
+
+\begin{itemize}
+  \item Kolmogorov’s LLN requires i.i.d. observations.
+  \item The ergodic theorem allows for \textbf{serial dependence}, as long as the dependence \textit{dies out over time}.
+  \item This makes it applicable to most stationary time series models used in econometrics.
 \end{itemize}
 
 

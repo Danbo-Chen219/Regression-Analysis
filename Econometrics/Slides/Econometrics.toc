@@ -9,3 +9,10 @@
 \contentsline {subsubsection}{\numberline {1.2.6}Test}{13}{}%
 \contentsline {subsection}{\numberline {1.3}Problem Set}{16}{}%
 \contentsline {section}{\numberline {2}Pandel Data \& Model}{21}{}%
+\contentsline {paragraph}{Proxy Variable}{34}{}%
+\contentsline {paragraph}{Instrumental Variables}{34}{}%
+\contentsline {paragraph}{Panel Data Solutions}{34}{}%
+\contentsline {paragraph}{Assumption FE.2 (Rank Condition).}{46}{}%
+\contentsline {paragraph}{FE Estimator via OLS on Demeaned Data.}{47}{}%
+\contentsline {paragraph}{Assumption FE.3 (Homoskedasticity and No Serial Correlation).}{47}{}%
+\contentsline {section}{\numberline {3}Stationarity}{47}{}%
