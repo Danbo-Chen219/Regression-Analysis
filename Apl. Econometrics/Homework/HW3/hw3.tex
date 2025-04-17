@@ -1,0 +1,35 @@
+install.packages("mlogit")
+install.packages("readxl")
+install.packages("dplyr")
+
+library(mlogit)
+library(readxl)
+library(dplyr)
+
+# --- Step 2: Load the dataset ---
+# Set your working directory or provide full path if needed
+df <- read_excel("Data503_longformfull.xlsx")
+
+# --- Step 3: Create necessary variables ---
+# You may need to adjust column names based on actual codebook
+
+df <- df %>%
+  mutate(
+    US = ifelse(Origin == 1, 1, 0),                   # 1 = USA, 0 = Canada
+    plantm = ifelse(ProductType == 2, 1, 0),          # 2 = plant-based
+    culturem = ifelse(ProductType == 3, 1, 0)         # 3 = cultured
+  )
+
+# --- Step 4: Convert to mlogit-compatible data ---
+mlogit_data <- mlogit.data(df,
+                           choice = "ProductsChoice",   # 1 if chosen, 0 otherwise
+                           shape = "long",
+                           alt.var = "Alt",             # Alternatives (1, 2, 3)
+                           chid.var = "Set",            # Choice scenario ID
+                           id.var = "PersonID")         # Respondent ID
+
+# --- Step 5: Estimate conditional logit model ---
+model <- mlogit(
+  ProductsChoice ~ nochoice + price + ethic + organ + US + plantm + culturem | 0,
+  data = mlogit_data
+)
